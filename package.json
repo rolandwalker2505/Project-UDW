@@ -1,0 +1,19 @@
+{
+  "name": "project-udw",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static HTML CSS JS webclient for Project UDW.",
+  "scripts": {
+    "start": "python3 -m http.server 5500",
+    "serve": "python3 -m http.server 5500"
+  },
+  "keywords": [
+    "html",
+    "css",
+    "javascript",
+    "bootstrap",
+    "webclient"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

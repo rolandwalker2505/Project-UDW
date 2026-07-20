@@ -1,0 +1,200 @@
+:root {
+  --app-bg: #f7f9fc;
+  --app-surface: #ffffff;
+  --app-text: #172033;
+  --app-muted: #627084;
+  --app-border: rgba(23, 32, 51, 0.1);
+  --app-primary: #4358ff;
+  --app-primary-soft: rgba(67, 88, 255, 0.12);
+  --app-shadow: 0 18px 45px rgba(27, 39, 68, 0.12);
+}
+
+[data-theme="dark"] {
+  --app-bg: #101522;
+  --app-surface: #171e2f;
+  --app-text: #edf2ff;
+  --app-muted: #a9b4c7;
+  --app-border: rgba(237, 242, 255, 0.12);
+  --app-primary: #8ea0ff;
+  --app-primary-soft: rgba(142, 160, 255, 0.16);
+  --app-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app-navbar {
+  background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+  border-bottom: 1px solid var(--app-border);
+  backdrop-filter: blur(16px);
+}
+
+.navbar-brand,
+.nav-link {
+  color: var(--app-text);
+}
+
+.brand-mark {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.35rem;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #4358ff, #10b981);
+  border-radius: 0.7rem;
+}
+
+.hero-section {
+  padding: 6rem 0 4rem;
+  background:
+    radial-gradient(circle at 20% 10%, var(--app-primary-soft), transparent 32rem),
+    radial-gradient(circle at 90% 5%, rgba(16, 185, 129, 0.12), transparent 28rem);
+}
+
+.section-padding {
+  padding: 4.5rem 0;
+}
+
+.section-muted {
+  background: color-mix(in srgb, var(--app-surface) 70%, var(--app-bg));
+}
+
+.section-heading {
+  max-width: 44rem;
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  color: var(--app-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-card,
+.app-card,
+.metric-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--app-shadow);
+}
+
+.hero-card {
+  padding: 1.5rem;
+}
+
+.timeline-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--app-muted);
+}
+
+.metric-card {
+  height: 100%;
+  padding: 1.25rem;
+}
+
+.metric-icon {
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+  border-radius: 0.9rem;
+}
+
+.status-progress {
+  height: 1.3rem;
+  background: color-mix(in srgb, var(--app-muted) 15%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.task-column {
+  min-height: 16rem;
+}
+
+.task-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.priority-dot {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.35rem;
+  border-radius: 999px;
+}
+
+.priority-high {
+  background: #ef4444;
+}
+
+.priority-medium {
+  background: #f59e0b;
+}
+
+.priority-low {
+  background: #10b981;
+}
+
+.status-filter {
+  max-width: 14rem;
+}
+
+.team-avatar {
+  display: inline-grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  background: linear-gradient(135deg, #4358ff, #10b981);
+  border-radius: 1rem;
+}
+
+.text-secondary {
+  color: var(--app-muted) !important;
+}
+
+.form-control,
+.form-select,
+.toast {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+.form-control::placeholder {
+  color: color-mix(in srgb, var(--app-muted) 70%, transparent);
+}
+
+@media (max-width: 767.98px) {
+  .hero-section {
+    padding-top: 4rem;
+  }
+
+  .section-padding {
+    padding: 3rem 0;
+  }
+
+  .status-filter {
+    max-width: 100%;
+  }
+}
