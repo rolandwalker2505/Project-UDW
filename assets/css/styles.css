@@ -33,16 +33,39 @@ body {
 .intro-hero {
   position: relative;
   isolation: isolate;
-  color: var(--ink);
   display: grid;
   min-height: 100svh;
   overflow: hidden;
   align-items: center;
   padding: clamp(4rem, 9vw, 8rem) 0;
+
+  color: var(--text);
+
   background:
-    radial-gradient(circle at 78% 38%, rgb(32 179 145 / 24%), transparent 22rem),
-    radial-gradient(circle at 8% 92%, rgb(51 105 255 / 20%), transparent 26rem),
-    linear-gradient(125deg, #071a2b 0%, #0a2235 55%, #0b2d3b 100%);
+    radial-gradient(circle at 78% 38%,
+      rgb(8 127 91 / 16%),
+      transparent 22rem),
+    radial-gradient(circle at 8% 92%,
+      rgb(51 105 255 / 10%),
+      transparent 26rem),
+    linear-gradient(125deg,
+      #f8fcfb 0%,
+      #eef6f4 55%,
+      #e5f3ef 100%);
+}
+
+:root[data-theme="dark"] .intro-hero {
+  background:
+    radial-gradient(circle at 78% 38%,
+      rgb(32 179 145 / 24%),
+      transparent 22rem),
+    radial-gradient(circle at 8% 92%,
+      rgb(51 105 255 / 20%),
+      transparent 26rem),
+    linear-gradient(125deg,
+      #071a2b 0%,
+      #0a2235 55%,
+      #0b2d3b 100%);
 }
 
 .intro-hero::before {
@@ -90,7 +113,7 @@ body {
 
 .intro-eyebrow {
   margin: 0 0 0.5rem;
-  color: var(--accent);
+  color: var(--action);
   font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -109,7 +132,7 @@ body {
 .intro-description {
   max-width: 37rem;
   margin: 0 0 1.5rem;
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   line-height: 1.7;
 }
@@ -124,13 +147,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--action);
   padding: 0.85rem 1.4rem;
-  color: #062219;
+  color: var(--action-text);
   font: inherit;
   font-weight: 750;
   border-radius: 0.8rem;
-  background: var(--accent);
+  background: var(--action);
   box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 22%);
   cursor: pointer;
   transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -138,26 +161,26 @@ body {
 
 .login-button:hover,
 .login-button:active {
-  color: #062219;
-  border-color: var(--accent-hover);
-  background: var(--accent-hover);
+  color: var(--action-text);
+  border-color: var(--action-hover);
+  background: var(--action-hover);
   box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 30%);
   transform: translateY(-2px);
 }
 
 .login-button:focus-visible {
-  color: #062219;
+  color: var(--action-text);
   outline: 3px solid var(--focus);
   outline-offset: 4px;
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--action);
+  background: var(--action);
   box-shadow: none;
 }
 
 .intro-note {
   max-width: 32rem;
   margin: 1rem 0 0;
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 0.875rem;
   line-height: 1.6;
 }
@@ -305,6 +328,41 @@ body {
 .icon-button:hover {
   color: var(--action);
   background: var(--action-soft);
+}
+
+.theme-toggle {
+  position: fixed;
+  z-index: 100;
+  top: 1rem;
+  right: 1rem;
+
+  display: inline-grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  box-shadow: var(--card-shadow);
+
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: var(--action);
+  background: var(--action-soft);
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .app-shell {
@@ -512,7 +570,7 @@ body {
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: var(--night);
+  background: var(--surface-2);
 }
 
 .auth-card {
