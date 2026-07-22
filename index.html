@@ -7,6 +7,7 @@
   <meta name="description" content="Tìm đồ thất lạc trong cộng đồng sinh viên.">
   <title>Tìm đồ thất lạc | Cộng đồng sinh viên</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/components/item-detail.css">
 </head>
 
 <body>
@@ -46,12 +47,82 @@
       </div>
       <div id="postGrid" class="post-grid" aria-live="polite"></div>
     </section>
+
     <section id="profileView" class="view" hidden>
       <div class="empty-state">
         <h2>Tài khoản</h2>
         <p id="profileState">Bạn chưa đăng nhập.</p>
       </div>
     </section>
+
+    <dialog class="item-detail-dialog" id="itemDetailDialog" aria-labelledby="itemDetailTitle">
+      <div class="item-detail-dialog__panel">
+        <header class="item-detail-dialog__header">
+          <h2 id="itemDetailTitle">
+            Chi tiết bài đăng
+          </h2>
+
+          <form method="dialog">
+            <button class="item-detail-dialog__close" type="submit" aria-label="Đóng">
+              ×
+            </button>
+          </form>
+        </header>
+
+        <div class="item-detail-dialog__body">
+          <div class="item-detail-dialog__media">
+            <img class="item-detail-dialog__image" id="itemDetailImage" alt="" hidden>
+
+            <div class="item-detail-dialog__placeholder" id="itemDetailNoImage">
+              Chưa có ảnh
+            </div>
+          </div>
+
+          <dl class="item-detail-dialog__list">
+            <dt>Danh mục</dt>
+            <dd id="itemDetailCategory">
+              Chưa phân loại
+            </dd>
+
+            <dt>Người đăng</dt>
+            <dd id="itemDetailCreator">
+              Không xác định
+            </dd>
+
+            <dt>Mã sinh viên</dt>
+            <dd id="itemDetailStudentId">
+              Không xác định
+            </dd>
+
+            <dt>Địa điểm</dt>
+            <dd id="itemDetailLocation">
+              Chưa có thông tin
+            </dd>
+
+            <dt>Liên hệ</dt>
+            <dd id="itemDetailContact">
+              Chưa có thông tin
+            </dd>
+
+            <dt>Thời gian</dt>
+            <dd>
+              <time id="itemDetailTime"></time>
+            </dd>
+
+            <dt>Nội dung</dt>
+            <dd class="item-detail-dialog__content" id="itemDetailContent"></dd>
+          </dl>
+        </div>
+
+        <footer class="item-detail-dialog__footer">
+          <form method="dialog">
+            <button class="item-detail-dialog__close-button" type="submit">
+              Đóng
+            </button>
+          </form>
+        </footer>
+      </div>
+    </dialog>
   </main>
   <script type="module" src="assets/js/main.js"></script>
 </body>
