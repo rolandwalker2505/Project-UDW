@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng nhập | Tìm lại</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <main class="auth-shell">
+        <section class="auth-card">
+            <p class="eyebrow">Cộng đồng sinh viên</p>
+            <h1>Đăng nhập</h1>
+            <p>Nhập mã số sinh viên để tiếp tục.</p>
+            <form id="loginForm">
+                <label for="studentId">Mã số sinh viên</label>
+                <input id="studentId" name="studentId" required pattern="[A-Za-z0-9-]{3,30}" autocomplete="username">
+                <button class="primary-button" type="submit">Vào dashboard</button>
+                <p id="loginError" class="form-error" role="alert" hidden>Mã số sinh viên không hợp lệ.</p>
+            </form>
+            <a href="./introduction.html">Quay lại</a>
+        </section>
+    </main>
+    <script type="module" src="../assets/js/login.js"></script>
+</body>
+
+</html>

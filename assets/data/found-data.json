@@ -1,0 +1,16 @@
+[
+  {
+    "id": "post-2",
+    "type": "found",
+    "title": "Nhặt được ví màu đen",
+    "category": "wallet",
+    "creator": {
+      "studentId": "SV002",
+      "name": "Trần Bình"
+    },
+    "content": "Nhặt gần thư viện trung tâm.",
+    "createTime": "2026-07-20T10:00:00.000Z",
+    "image": null,
+    "marked": false
+  }
+]

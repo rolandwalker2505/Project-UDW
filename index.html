@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tìm đồ thất lạc trong cộng đồng sinh viên.">
+  <title>Tìm đồ thất lạc | Cộng đồng sinh viên</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+  <header class="app-navbar">
+    <a class="brand" href="./">Đồ thất lạc</a>
+    <nav aria-label="Điều hướng chính">
+      <button class="nav-button active" data-view="posts" type="button">Bài viết</button>
+      <button class="nav-button" data-view="profile" type="button">Tài khoản</button>
+    </nav>
+    <button id="themeToggle" class="icon-button" type="button" aria-label="Đổi giao diện">☾</button>
+  </header>
+
+  <main class="app-shell">
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">Cộng đồng sinh viên</p>
+        <h1>Đồ thất lạc, rồi sẽ tìm lại được.</h1>
+      </div>
+      <button id="loginButton" class="primary-button" type="button">Đăng nhập</button>
+    </section>
+
+    <section id="postsView" class="view" aria-labelledby="postsTitle">
+      <div class="toolbar">
+        <div class="mode-switch" role="group" aria-label="Loại bài viết">
+          <button class="mode-button active" data-mode="lost" type="button">Đồ bị mất</button>
+          <button class="mode-button" data-mode="found" type="button">Đồ nhặt được</button>
+        </div>
+        <label class="search-box">Tìm kiếm<input id="postSearch" type="search"
+            placeholder="Tìm trong tiêu đề, nội dung..."></label>
+        <label>Danh mục<select id="categoryFilter">
+            <option value="all">Đang tải danh mục...</option>
+          </select></label>
+        <label>Sắp xếp<select id="sortFilter">
+            <option value="createTime-desc">Mới nhất</option>
+            <option value="createTime-asc">Cũ nhất</option>
+          </select></label>
+      </div>
+      <div id="postGrid" class="post-grid" aria-live="polite"></div>
+    </section>
+    <section id="profileView" class="view" hidden>
+      <div class="empty-state">
+        <h2>Tài khoản</h2>
+        <p id="profileState">Bạn chưa đăng nhập.</p>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+
+</html>

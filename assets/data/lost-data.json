@@ -1,0 +1,13 @@
+[
+  {
+    "id": "post-1",
+    "type": "lost",
+    "title": "Mất thẻ sinh viên",
+    "category": "student-card",
+    "creator": { "studentId": "SV001", "name": "Nguyễn Minh An" },
+    "content": "Mất tại khu A vào buổi chiều.",
+    "createTime": "2026-07-21T08:30:00.000Z",
+    "image": null,
+    "marked": false
+  }
+]

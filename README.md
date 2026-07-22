@@ -1,63 +1,54 @@
-# Project-UDW
+# Project UDW — Tìm lại
 
-Code base webclient tĩnh cho nhóm 4 người phát triển bằng HTML, CSS và JavaScript.
+Webclient tĩnh giúp sinh viên đăng và tìm thông tin đồ thất lạc.
 
 ## Chạy trên localhost
 
-Không cần cài dependency và không có backend/server ứng dụng. Dùng static server cục bộ để trình duyệt tải được ES Modules:
-
 ```bash
-python3 -m http.server 5500
+npm start
 ```
 
-Mở:
+Mở `http://localhost:5500/pages/introduction.html`.
 
-```text
-http://localhost:5500
-```
+Không mở trực tiếp bằng `file://` vì ứng dụng dùng ES Modules và `fetch()` để tải JSON.
 
-## Cấu trúc thư mục
+## Flow
+
+1. Introduction → chọn đăng nhập.
+2. Login bằng mã số sinh viên.
+3. Dashboard → xem lost/found, tìm kiếm, lọc danh mục, sắp xếp và đánh dấu bài viết.
+
+## Cấu trúc
 
 ```text
 .
-├── index.html
+├── index.html                  # Dashboard, yêu cầu đăng nhập
+├── pages/
+│   ├── introduction.html
+│   └── login.html
 ├── assets/
 │   ├── css/styles.css
-│   ├── data/seed-data.js
+│   ├── data/
+│   │   ├── category.json
+│   │   ├── found-data.json
+│   │   └── lost-data.json
 │   └── js/
+│       ├── auth.js
+│       ├── login.js
 │       ├── main.js
 │       └── modules/
-│           ├── dashboard.js
+│           ├── posts.js
 │           ├── state.js
-│           ├── storage.js
-│           ├── tasks.js
-│           ├── team.js
-│           └── ui.js
-├── docs/
-│   ├── CONTRIBUTING.md
-│   └── TASK-SPLIT.md
-└── package.json
+│           └── storage.js
+├── package.json
+└── README.md
 ```
 
-## Phân chia cho 4 người
+User và application state được lưu trong `localStorage`. Dữ liệu mẫu và danh mục được tải từ các file JSON trong `assets/data`.
 
-- Người 1: layout, responsive UI, Bootstrap utilities, `index.html`, `assets/css/styles.css`.
-- Người 2: quản lý task board, form thêm task, trạng thái task, `assets/js/modules/tasks.js`.
-- Người 3: dashboard metrics, biểu đồ tiến độ, dữ liệu mẫu, `assets/js/modules/dashboard.js`, `assets/data/seed-data.js`.
-- Người 4: team view, localStorage, theme, tài liệu, `assets/js/modules/team.js`, `assets/js/modules/storage.js`.
+## Công nghệ
 
-Chi tiết quy ước làm việc nằm trong `docs/CONTRIBUTING.md` và `docs/TASK-SPLIT.md`.
-
-## Tính năng hiện có
-
-- Dashboard thống kê tiến độ từ dữ liệu task.
-- Task board có lọc, thêm task, chuyển trạng thái và lưu bằng `localStorage`.
-- Team section hiển thị 4 thành viên và workload.
-- Toggle dark mode lưu theo trình duyệt.
-- Nút reset dữ liệu demo.
-
-## Ghi chú kỹ thuật
-
-- Bootstrap 5 và Font Awesome đang được dùng qua CDN để giảm setup.
-- Vì dùng ES Modules, nên nên chạy qua `localhost`, không mở trực tiếp bằng `file://`.
-- Dữ liệu chỉ nằm ở trình duyệt; refresh vẫn giữ nhờ `localStorage`.
+- HTML5
+- CSS3
+- JavaScript ES Modules
+- Không có server backend hoặc dependency runtime bên ngoài
