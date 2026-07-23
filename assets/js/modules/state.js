@@ -15,6 +15,28 @@ const fallback = {
 };
 let state = loadState(fallback);
 export const getState = () => state;
+
+function syncPostsFromJson(jsonPosts, storedPosts) {
+  const storedPostsById = new Map(
+    storedPosts.map(post => [
+      String(post.id),
+      post
+    ])
+  );
+
+  return jsonPosts.map(post => {
+    const storedPost =
+      storedPostsById.get(String(post.id));
+
+    return {
+      ...post,
+      marked: storedPost
+        ? Boolean(storedPost.marked)
+        : Boolean(post.marked)
+    };
+  });
+}
+
 export async function initializeState() {
   try {
     const categoryResponse = await fetch("./assets/data/category.json");
@@ -22,8 +44,6 @@ export async function initializeState() {
   } catch (error) {
     console.warn("Không tải được danh mục.", error);
   }
-  if (state.posts.length)
-    return state;
   try {
     const [lostResponse, foundResponse] = await Promise.all([
       fetch("./assets/data/lost-data.json"),
@@ -32,7 +52,14 @@ export async function initializeState() {
     if (!lostResponse.ok || !foundResponse.ok)
       throw new Error("Seed data unavailable");
     const [lostPosts, foundPosts] = await Promise.all([lostResponse.json(), foundResponse.json()]);
-    state = { ...state, posts: [...lostPosts, ...foundPosts] };
+    const jsonPosts = [...lostPosts, ...foundPosts];
+    state = {
+      ...state,
+      posts: syncPostsFromJson(
+        jsonPosts,
+        state.posts
+      )
+    };
     saveState(state);
   } catch (error) {
     console.warn("Không tải được dữ liệu mẫu.", error);

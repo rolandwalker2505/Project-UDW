@@ -8,6 +8,7 @@
   <title>Tìm đồ thất lạc | Cộng đồng sinh viên</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/components/item-detail.css">
+  <link rel="stylesheet" href="assets/css/components/add-post.css">
 </head>
 
 <body>
@@ -17,6 +18,8 @@
       <button class="nav-button active" data-view="posts" type="button">Bài viết</button>
       <button class="nav-button" data-view="profile" type="button">Tài khoản</button>
     </nav>
+
+    <button id="loginButton" class="primary-button navbar-logout-button" type="button">Đăng nhập</button>
     <button id="themeToggle" class="icon-button" type="button" aria-label="Đổi giao diện">☾</button>
   </header>
 
@@ -26,7 +29,11 @@
         <p class="eyebrow">Cộng đồng sinh viên</p>
         <h1>Đồ thất lạc, rồi sẽ tìm lại được.</h1>
       </div>
-      <button id="loginButton" class="primary-button" type="button">Đăng nhập</button>
+      <div class="page-heading__actions">
+        <button id="addPostButton" class="secondary-button" type="button">
+          + Đăng bài mới
+        </button>
+      </div>
     </section>
 
     <section id="postsView" class="view" aria-labelledby="postsTitle">
@@ -122,6 +129,101 @@
           </form>
         </footer>
       </div>
+    </dialog>
+
+    <dialog class="add-post-dialog" id="addPostDialog" aria-labelledby="addPostTitle">
+      <form class="add-post-form" id="addPostForm">
+        <header class="add-post-dialog__header">
+          <div>
+            <p class="eyebrow">Bài đăng mới</p>
+
+            <h2 id="addPostTitle">
+              Đăng thông tin đồ thất lạc
+            </h2>
+          </div>
+
+          <button class="add-post-dialog__close" id="closeAddPostButton" type="button" aria-label="Đóng">
+            ×
+          </button>
+        </header>
+
+        <div class="add-post-dialog__body">
+          <div class="add-post-form__grid">
+            <label class="add-post-form__field">
+              Loại bài đăng
+
+              <select id="addPostType" name="type" required>
+                <option value="lost">
+                  Đồ bị mất
+                </option>
+
+                <option value="found">
+                  Đồ nhặt được
+                </option>
+              </select>
+            </label>
+
+            <label class="add-post-form__field">
+              Danh mục
+
+              <select id="addPostCategory" name="category" required>
+                <option value="">
+                  Đang tải danh mục...
+                </option>
+              </select>
+            </label>
+
+            <label class="add-post-form__field add-post-form__field--full">
+              Tiêu đề
+
+              <input id="addPostTitleInput" name="title" type="text" maxlength="100" required>
+            </label>
+
+            <label class="add-post-form__field">
+              Họ tên người đăng
+
+              <input id="addPostCreatorName" name="creatorName" type="text" maxlength="80" required>
+            </label>
+
+            <label class="add-post-form__field">
+              Địa điểm
+
+              <input id="addPostLocation" name="location" type="text" maxlength="120" required>
+            </label>
+
+            <label class="add-post-form__field add-post-form__field--full">
+              Thông tin liên hệ
+
+              <input id="addPostContact" name="contact" type="text" maxlength="120"
+                placeholder="Email hoặc số điện thoại" required>
+            </label>
+
+            <label class="add-post-form__field add-post-form__field--full">
+              Nội dung chi tiết
+
+              <textarea id="addPostContent" name="content" rows="5" maxlength="1000" required></textarea>
+            </label>
+
+            <label class="add-post-form__field add-post-form__field--full">
+              Đường dẫn ảnh
+              <span>(không bắt buộc)</span>
+
+              <input id="addPostImage" name="image" type="text" maxlength="500"
+                placeholder="https://... hoặc assets/images/...">
+            </label>
+          </div>
+        </div>
+
+        <footer class="add-post-dialog__footer">
+          <button class="secondary-button" id="cancelAddPostButton" type="button">
+            Hủy
+          </button>
+
+          <button class="primary-button" type="submit">
+            Đăng bài
+          </button>
+        </footer>
+      </form>
     </dialog>
   </main>
   <script type="module" src="assets/js/main.js"></script>

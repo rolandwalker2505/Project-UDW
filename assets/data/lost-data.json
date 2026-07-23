@@ -1,10 +1,29 @@
 [
   {
+    "id": "post-1784780636906",
+    "type": "lost",
+    "title": "Cậu Vàng",
+    "category": "other",
+    "creator": {
+      "studentId": "111",
+      "name": "Trần Đăng Khoa"
+    },
+    "content": "Cậu Vàng đi đời rồi, ông giáo ạ",
+    "location": "Sảnh A, Cơ sở Nhà Bè",
+    "contact": "Unknown",
+    "createTime": "2026-07-23T04:23:56.907Z",
+    "image": "https://cdn-media.sforum.vn/storage/app/media/phuonganh/ket-thuc-trong-tiem-pho-cua-anh-hai-6.jpg",
+    "marked": false
+  },
+  {
     "id": "post-1",
     "type": "lost",
     "title": "Mất thẻ sinh viên",
     "category": "student-card",
-    "creator": { "studentId": "SV001", "name": "Nguyễn Minh An" },
+    "creator": {
+      "studentId": "SV001",
+      "name": "Nguyễn Minh An"
+    },
     "content": "Mất tại khu A vào buổi chiều.",
     "location": "Khu A, cơ sở Nhà Bè",
     "contact": "minhan@example.com",
