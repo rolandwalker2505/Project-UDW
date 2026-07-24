@@ -167,20 +167,135 @@ async function writePostToJson(post) {
   };
 }
 
-function enqueuePostWrite(post) {
-  const operation = postWriteQueue.then(
-    () => writePostToJson(post),
+async function updatePostInJson(postId, changes, studentId) {
+  if (!studentId) {
+    throw createHttpError(401, "Bạn cần đăng nhập để sửa bài đăng.");
+  }
+
+  const dataDirectory = path.join(
+    ROOT_DIRECTORY,
+    "assets",
+    "data",
+  );
+  const fileNames = ["lost-data.json", "found-data.json"];
+  const files = await Promise.all(
+    fileNames.map(async (fileName) => {
+      const filePath = path.join(dataDirectory, fileName);
+      const posts = JSON.parse(await readFile(filePath, "utf8"));
+
+      if (!Array.isArray(posts)) {
+        throw createHttpError(
+          500,
+          `${fileName} không chứa một mảng JSON.`,
+        );
+      }
+
+      return { fileName, filePath, posts };
+    }),
+  );
+  const sourceFile = files.find(({ posts }) =>
+    posts.some((post) => String(post.id) === String(postId)),
   );
 
-  postWriteQueue = operation.catch(() => {});
+  if (!sourceFile) {
+    throw createHttpError(404, "Không tìm thấy bài đăng.");
+  }
 
-  return operation;
+  const postIndex = sourceFile.posts.findIndex(
+    (post) => String(post.id) === String(postId),
+  );
+  const existingPost = sourceFile.posts[postIndex];
+  const ownerStudentId =
+    existingPost.creator &&
+    typeof existingPost.creator === "object"
+      ? String(existingPost.creator.studentId || "")
+      : "";
+
+  if (ownerStudentId !== String(studentId)) {
+    throw createHttpError(
+      403,
+      "Bạn chỉ có thể sửa bài đăng của chính mình.",
+    );
+  }
+
+  const editableFields = [
+    "type",
+    "title",
+    "category",
+    "content",
+    "location",
+    "contact",
+    "image",
+  ];
+  const safeChanges = Object.fromEntries(
+    editableFields
+      .filter((fieldName) =>
+        Object.hasOwn(changes, fieldName),
+      )
+      .map((fieldName) => [
+        fieldName,
+        changes[fieldName],
+      ]),
+  );
+  const updatedPost = {
+    ...existingPost,
+    ...safeChanges,
+    id: existingPost.id,
+    creator: {
+      ...existingPost.creator,
+      name:
+        typeof changes.creator?.name === "string"
+          ? changes.creator.name
+          : existingPost.creator.name,
+      studentId: ownerStudentId,
+    },
+    createTime: existingPost.createTime,
+    marked: existingPost.marked,
+  };
+
+  validatePost(updatedPost);
+
+  const targetFileName =
+    updatedPost.type === "found"
+      ? "found-data.json"
+      : "lost-data.json";
+  const targetFile = files.find(
+    ({ fileName }) => fileName === targetFileName,
+  );
+
+  sourceFile.posts.splice(postIndex, 1);
+  targetFile.posts.unshift(updatedPost);
+
+  const filesToWrite = new Set([sourceFile, targetFile]);
+  await Promise.all(
+    [...filesToWrite].map(({ filePath, posts }) =>
+      writeFile(
+        filePath,
+        `${JSON.stringify(posts, null, 2)}\n`,
+        "utf8",
+      ),
+    ),
+  );
+
+  return { fileName: targetFileName, post: updatedPost };
+}
+
+function enqueuePostWrite(writeOperation) {
+  const queuedOperation = postWriteQueue.then(
+    writeOperation,
+  );
+
+  postWriteQueue = queuedOperation.catch(() => {});
+
+  return queuedOperation;
 }
 
 async function handleCreatePost(request, response) {
   try {
     const post = await readJsonBody(request);
-    const result = await enqueuePostWrite(post);
+    const result = await enqueuePostWrite(
+      () => writePostToJson(post),
+    );
 
     console.log(
       `Đã lưu ${result.post.id} vào assets/data/${result.fileName}.`,
@@ -200,6 +315,29 @@ async function handleCreatePost(request, response) {
             : "Không lưu được bài đăng.",
       },
     );
+  }
+}
+
+async function handleUpdatePost(
+  request,
+  response,
+  postId,
+) {
+  try {
+    const changes = await readJsonBody(request);
+    const studentId = request.headers["x-student-id"];
+    const result = await enqueuePostWrite(
+      () => updatePostInJson(postId, changes, studentId),
+    );
+
+    sendJson(response, 200, result);
+  } catch (error) {
+    console.error("Không sửa được bài đăng.", error);
+    sendJson(response, error.statusCode || 500, {
+      message: error.statusCode
+        ? error.message
+        : "Không sửa được bài đăng.",
+    });
   }
 }
 
@@ -291,6 +429,19 @@ const server = http.createServer(
       requestUrl.pathname === "/api/posts"
     ) {
       await handleCreatePost(request, response);
+      return;
+    }
+
+    const postMatch = requestUrl.pathname.match(
+      /^\/api\/posts\/([^/]+)$/,
+    );
+
+    if (request.method === "PATCH" && postMatch) {
+      await handleUpdatePost(
+        request,
+        response,
+        decodeURIComponent(postMatch[1]),
+      );
       return;
     }
 

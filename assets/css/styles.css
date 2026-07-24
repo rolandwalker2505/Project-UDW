@@ -649,7 +649,8 @@ body {
   gap: 0.25rem;
 }
 
-.detail-button {
+.detail-button,
+.edit-button {
   border: 1px solid var(--line);
   border-radius: 0.45rem;
   padding: 0.35rem 0.55rem;
@@ -664,13 +665,15 @@ body {
   cursor: pointer;
 }
 
-.detail-button:hover {
+.detail-button:hover,
+.edit-button:hover {
   color: var(--action-text);
   background: var(--action);
   border-color: var(--action);
 }
 
-.detail-button:focus-visible {
+.detail-button:focus-visible,
+.edit-button:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }

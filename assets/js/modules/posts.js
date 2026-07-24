@@ -89,6 +89,21 @@ export function renderPosts(state, target) {
               </span>
 
               <div class="post-card-actions">
+                ${
+                  String(post.creator?.studentId || "") ===
+                  String(state.currentUser?.studentId || "")
+                    ? `
+                <button
+                  class="edit-button"
+                  data-action="edit"
+                  data-id="${escapeHtml(post.id)}"
+                  type="button"
+                >
+                  Sửa
+                </button>`
+                    : ""
+                }
+
                 <button
                   class="detail-button"
                   data-action="detail"
