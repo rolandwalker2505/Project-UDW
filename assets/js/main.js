@@ -1,8 +1,14 @@
 import { getState, updateState, updateFilters, initializeState, categories } from "./modules/state.js";
 import { renderPosts } from "./modules/posts.js";
 import { showItemDetail } from "./modules/item-detail.js";
-import { createPostFromForm } from "./modules/add-post.js";
-import { savePostToJson } from "./modules/posts-api.js";
+import {
+    createPostFromForm,
+    createPostChangesFromForm,
+} from "./modules/add-post.js";
+import {
+    savePostToJson,
+    updatePostInJson,
+} from "./modules/posts-api.js";
 import { getCurrentUser, clearCurrentUser } from "./auth.js";
 
 const postGrid = document.querySelector("#postGrid");
@@ -32,16 +38,69 @@ const cancelAddPostButton =
 const categoryFilter =
     document.querySelector("#categoryFilter");
 
+const postFormEyebrow =
+    document.querySelector("#postFormEyebrow");
+const postFormTitle =
+    document.querySelector("#addPostTitle");
+const submitPostButton =
+    document.querySelector("#submitPostButton");
+let editingPostId = null;
+
 if (!getCurrentUser())
     window.location.replace("./pages/login.html");
 else updateState(
     { currentUser: getCurrentUser() });
 
 function openAddPostDialog() {
+    editingPostId = null;
     addPostForm.reset();
+    postFormEyebrow.textContent = "Bài đăng mới";
+    postFormTitle.textContent =
+        "Đăng thông tin đồ thất lạc";
+    submitPostButton.textContent = "Đăng bài";
 
     addPostType.value =
         getState().mode;
+
+    if (!addPostDialog.open) {
+        addPostDialog.showModal();
+    }
+}
+
+function openEditPostDialog(post) {
+    const currentStudentId =
+        getCurrentUser()?.studentId;
+    const ownerStudentId =
+        post.creator?.studentId;
+
+    if (
+        !currentStudentId ||
+        String(ownerStudentId) !==
+        String(currentStudentId)
+    ) {
+        alert(
+            "Bạn chỉ có thể sửa bài đăng của chính mình.",
+        );
+        return;
+    }
+
+    editingPostId = String(post.id);
+    addPostForm.reset();
+    addPostType.value = post.type;
+    addPostCategory.value = post.category;
+    addPostForm.elements.title.value =
+        post.title || "";
+    addPostForm.elements.creatorName.value =
+        post.creator?.name || "";
+    addPostForm.elements.location.value =
+        post.location || "";
+    addPostForm.elements.contact.value =
+        post.contact || "";
+    addPostForm.elements.content.value =
+        post.content || "";
+    postFormEyebrow.textContent = "Chỉnh sửa bài đăng";
+    postFormTitle.textContent = "Cập nhật thông tin";
+    submitPostButton.textContent = "Lưu thay đổi";
 
     if (!addPostDialog.open) {
         addPostDialog.showModal();
@@ -52,6 +111,8 @@ function closeAddPostDialog() {
     if (addPostDialog.open) {
         addPostDialog.close();
     }
+
+    editingPostId = null;
 }
 
 function syncPostControls(state) {
@@ -167,6 +228,10 @@ cancelAddPostButton.addEventListener(
     closeAddPostDialog,
 );
 
+addPostDialog.addEventListener("close", () => {
+    editingPostId = null;
+});
+
 addPostForm.addEventListener(
     "submit",
     async (event) => {
@@ -184,6 +249,51 @@ addPostForm.addEventListener(
         }
 
         try {
+            if (editingPostId) {
+                const existingPost =
+                    getState().posts.find(
+                        (post) =>
+                            String(post.id) ===
+                            editingPostId,
+                    );
+
+                if (!existingPost) {
+                    throw new Error(
+                        "Không tìm thấy bài đăng.",
+                    );
+                }
+
+                const changes =
+                    await createPostChangesFromForm(
+                        addPostForm,
+                        existingPost,
+                    );
+                const updatedPost =
+                    await updatePostInJson(
+                        editingPostId,
+                        changes,
+                        currentUser.studentId,
+                    );
+                const state = getState();
+
+                updateState({
+                    posts: state.posts.map((post) =>
+                        String(post.id) === editingPostId
+                            ? {
+                                ...updatedPost,
+                                marked: post.marked,
+                            }
+                            : post
+                    ),
+                    mode: updatedPost.type,
+                });
+
+                closeAddPostDialog();
+                addPostForm.reset();
+                render();
+                return;
+            }
+
             const newPost =
                 await createPostFromForm(
                     addPostForm,
@@ -236,6 +346,18 @@ postGrid.addEventListener("click", event => {
 
     const action = button.dataset.action;
     const postId = button.dataset.id;
+
+    if (action === "edit") {
+        const post = getState().posts.find(
+            (item) => String(item.id) === postId,
+        );
+
+        if (post) {
+            openEditPostDialog(post);
+        }
+
+        return;
+    }
 
     if (action === "detail") {
         const post = getState().posts.find(

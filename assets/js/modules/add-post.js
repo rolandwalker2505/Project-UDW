@@ -107,3 +107,34 @@ export async function createPostFromForm(
         marked: false,
     };
 }
+
+export async function createPostChangesFromForm(
+    form,
+    existingPost,
+) {
+    const formData = new FormData(form);
+    const replacementImage =
+        await getImageDataUrl(formData);
+
+    return {
+        type:
+            getFormValue(formData, "type") === "found"
+                ? "found"
+                : "lost",
+        title: getFormValue(formData, "title"),
+        category:
+            getFormValue(formData, "category"),
+        creator: {
+            name:
+                getFormValue(formData, "creatorName"),
+        },
+        content: getFormValue(formData, "content"),
+        location:
+            getFormValue(formData, "location"),
+        contact: getFormValue(formData, "contact"),
+        image:
+            replacementImage === null
+                ? existingPost.image || null
+                : replacementImage,
+    };
+}
