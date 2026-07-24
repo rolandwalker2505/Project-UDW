@@ -1,5 +1,37 @@
 [
   {
+    "id": "post-1784922889794",
+    "type": "lost",
+    "title": "tìm đồ thất lạc",
+    "category": "other",
+    "creator": {
+      "studentId": "2351010216",
+      "name": "hạnh nhân"
+    },
+    "content": "",
+    "location": "a308",
+    "contact": "098765432`",
+    "createTime": "2026-07-24T19:54:49.794Z",
+    "image": null,
+    "marked": false
+  },
+  {
+    "id": "post-1784921848390",
+    "type": "lost",
+    "title": "Tìm đồ",
+    "category": "student-card",
+    "creator": {
+      "studentId": "2351010216",
+      "name": "Nguyễn Văn A"
+    },
+    "content": "",
+    "location": "A209 Nhà Bè",
+    "contact": "0363989503",
+    "createTime": "2026-07-24T19:37:28.391Z",
+    "image": null,
+    "marked": false
+  },
+  {
     "id": "post-1784914507293",
     "type": "lost",
     "title": "TÌM BÌNH NƯỚC",

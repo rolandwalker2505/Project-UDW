@@ -1,0 +1,94 @@
+.post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+nav .nav-button[data-mark-post-view] {
+  min-width: 6rem;
+}
+
+nav .nav-button[data-mark-post-view].active {
+  color: var(--action-text);
+  background: var(--action);
+}
+
+.mark-post-bottom-actions {
+  display: flex;
+  min-height: 1.9rem;
+  margin-top: auto;
+  padding-top: .75rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.btn-mark,
+.btn-confirm,
+.btn-delete {
+  display: inline-flex;
+  min-height: 1.8rem;
+  padding: .3rem .55rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: .45rem;
+  color: #f8fafc;
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.btn-mark {
+  background: #2563eb;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgb(37 99 235 / 22%);
+}
+
+.btn-confirm {
+  background: #d97706;
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgb(217 119 6 / 22%);
+}
+
+.btn-delete {
+  background: #dc2626;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgb(220 38 38 / 22%);
+}
+
+.btn-mark:hover,
+.btn-confirm:hover,
+.btn-delete:hover {
+  opacity: .85;
+}
+
+.btn-mark:focus-visible,
+.btn-confirm:focus-visible,
+.btn-delete:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-mark:active,
+.btn-confirm:active,
+.btn-delete:active {
+  transform: translateY(1px);
+}
+
+.badge-sv {
+  padding: .2rem .45rem;
+  color: #ecfdf5;
+  background: #10b981;
+  border: 1px solid rgb(52 211 153 / 55%);
+  border-radius: 999px;
+  font-size: .68rem;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgb(16 185 129 / 18%);
+}

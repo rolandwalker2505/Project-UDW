@@ -14,6 +14,12 @@ import { getCurrentUser, clearCurrentUser } from "./auth.js";
 const postGrid = document.querySelector("#postGrid");
 const themeToggle = document.querySelector("#themeToggle");
 
+const markPost_stylesheet =
+    document.createElement("link");
+markPost_stylesheet.rel = "stylesheet";
+markPost_stylesheet.href = "./assets/css/style.css";
+document.head.append(markPost_stylesheet);
+
 const addPostButton =
     document.querySelector("#addPostButton");
 
@@ -45,6 +51,302 @@ const postFormTitle =
 const submitPostButton =
     document.querySelector("#submitPostButton");
 let editingPostId = null;
+
+const markPost_tabDefinitions = [
+    { key: "all", label: "Tất cả" },
+    { key: "pending", label: "Chờ xác nhận" },
+    { key: "personal", label: "Cá nhân" },
+];
+const markPost_tabs = markPost_tabDefinitions.map(tab => {
+    const button = document.createElement("button");
+    button.className = "nav-button";
+    button.type = "button";
+    button.textContent = tab.label;
+    button.dataset.markPostView = tab.key;
+    document
+        .querySelector("nav[aria-label='Điều hướng chính']")
+        .append(button);
+    return button;
+});
+
+function markPost_isOwner(post, currentUser) {
+    return Boolean(
+        currentUser?.studentId &&
+        String(currentUser.studentId) ===
+        String(post.ownerStudentId),
+    );
+}
+
+function markPost_updateStatus(postId, nextStatus) {
+    const state = getState();
+
+    updateState({
+        posts: state.posts.map(post =>
+            String(post.id) === String(postId)
+                ? {
+                    ...post,
+                    marked:
+                        nextStatus !== "dang_dang",
+                    status: nextStatus,
+                }
+                : post
+        ),
+    });
+
+    render();
+}
+
+function markPost_markReturned(postId) {
+    const state = getState();
+    const post = state.posts.find(
+        item => String(item.id) === String(postId),
+    );
+
+    if (
+        !post ||
+        post.status !== "dang_dang" ||
+        !markPost_isOwner(post, state.currentUser)
+    ) {
+        return;
+    }
+
+    markPost_updateStatus(
+        postId,
+        "cho_xac_nhan_hoan_tra",
+    );
+}
+
+function markPost_confirm(postId) {
+    const state = getState();
+    const post = state.posts.find(
+        item => String(item.id) === String(postId),
+    );
+
+    if (
+        !post ||
+        post.status !== "cho_xac_nhan_hoan_tra" ||
+        !markPost_isOwner(post, state.currentUser)
+    ) {
+        return;
+    }
+
+    markPost_updateStatus(
+        postId,
+        "hoan_tra_thanh_cong",
+    );
+}
+
+function markPost_delete(postId) {
+    const state = getState();
+    const post = state.posts.find(
+        item => String(item.id) === String(postId),
+    );
+
+    if (
+        !post ||
+        post.status !== "hoan_tra_thanh_cong" ||
+        !markPost_isOwner(post, state.currentUser)
+    ) {
+        return;
+    }
+
+    if (!window.confirm("Bạn có chắc muốn xóa?")) {
+        return;
+    }
+
+    updateState({
+        posts: state.posts.filter(
+            item => String(item.id) !== String(postId),
+        ),
+        deletedPostIds: [
+            ...(state.deletedPostIds || []),
+            String(postId),
+        ],
+    });
+
+    render();
+}
+
+function markPost_createButton(
+    action,
+    postId,
+    label,
+    className,
+) {
+    const button = document.createElement("button");
+    button.className = className;
+    button.dataset.action = action;
+    button.dataset.id = String(postId);
+    button.type = "button";
+    button.textContent = label;
+    return button;
+}
+
+function markPost_renderOwnerActions(state) {
+    postGrid
+        .querySelectorAll(".post-card")
+        .forEach(card => {
+            const actions =
+                card.querySelector(".post-card-actions");
+            const postId =
+                actions?.querySelector("[data-id]")?.dataset.id;
+            const post = state.posts.find(
+                item => String(item.id) === String(postId),
+            );
+
+            if (!actions || !post) {
+                return;
+            }
+
+            if (post.category === "student-card") {
+                card
+                    .querySelector(".category-badge")
+                    ?.classList.add("badge-sv");
+            }
+
+            actions
+                .querySelectorAll(
+                    ".mark-button, [data-action='delete']",
+                )
+                .forEach(button => button.remove());
+
+            if (!markPost_isOwner(post, state.currentUser)) {
+                return;
+            }
+
+            const bottomActions =
+                document.createElement("div");
+            bottomActions.className =
+                "mark-post-bottom-actions";
+            card.append(bottomActions);
+
+            if (post.status === "dang_dang") {
+                bottomActions.append(
+                    markPost_createButton(
+                        "markReturned",
+                        post.id,
+                        "✓ Đánh dấu hoàn trả",
+                        "btn-mark",
+                    ),
+                );
+                return;
+            }
+
+            if (
+                post.status ===
+                "cho_xac_nhan_hoan_tra"
+            ) {
+                bottomActions.append(
+                    markPost_createButton(
+                        "confirmReturned",
+                        post.id,
+                        "✓ Xác nhận đã nhận",
+                        "btn-confirm",
+                    ),
+                );
+                return;
+            }
+
+            if (
+                post.status ===
+                "hoan_tra_thanh_cong"
+            ) {
+                bottomActions.append(
+                    markPost_createButton(
+                        "delete",
+                        post.id,
+                        "🗑️ Xóa",
+                        "btn-delete",
+                    ),
+                );
+            }
+        });
+}
+
+function markPost_getRenderState(state) {
+    const deletedPostIds = new Set(
+        (state.deletedPostIds || []).map(String),
+    );
+    const visiblePosts = state.posts.filter(
+        post =>
+            !deletedPostIds.has(String(post.id)),
+    );
+
+    const currentUser = state.currentUser;
+    const view = state.markPostView || "all";
+    const filteredPosts =
+        view === "pending"
+            ? visiblePosts.filter(
+                post =>
+                    post.status ===
+                    "cho_xac_nhan_hoan_tra" &&
+                    markPost_isOwner(post, currentUser),
+            )
+            : view === "personal"
+                ? visiblePosts.filter(
+                    post =>
+                        post.status ===
+                        "hoan_tra_thanh_cong" &&
+                        markPost_isOwner(post, currentUser),
+                )
+                : visiblePosts.filter(
+                    post => post.status === "dang_dang",
+                );
+
+    return {
+        ...state,
+        posts: filteredPosts
+            .map(post => ({
+                ...post,
+                type: state.mode,
+            })),
+        filters: {
+            ...(view === "all"
+                ? state.filters
+                : {
+                    ...state.filters,
+                    keyword: "",
+                    category: "all",
+                }),
+        },
+    };
+}
+
+function markPost_syncPosts(posts, storedPosts) {
+    const storedById = new Map(
+        storedPosts.map(post => [
+            String(post.id),
+            post,
+        ]),
+    );
+
+    return posts.map(post => {
+        const storedPost =
+            storedById.get(String(post.id));
+        const storedStatus =
+            storedPost?.status || post.status;
+        const status = [
+            "dang_dang",
+            "cho_xac_nhan_hoan_tra",
+            "hoan_tra_thanh_cong",
+        ].includes(storedStatus)
+            ? storedStatus
+            : (storedPost?.marked || post.marked)
+                ? "cho_xac_nhan_hoan_tra"
+                : "dang_dang";
+
+        return {
+            ...post,
+            ownerStudentId:
+                post.ownerStudentId ||
+                storedPost?.ownerStudentId ||
+                post.creator?.studentId ||
+                "",
+            marked: status !== "dang_dang",
+            status,
+        };
+    });
+}
 
 if (!getCurrentUser())
     window.location.replace("./pages/login.html");
@@ -133,6 +435,14 @@ function syncPostControls(state) {
 
     document.querySelector("#sortFilter").value =
         state.filters.sortBy;
+
+    markPost_tabs.forEach(tab =>
+        tab.classList.toggle(
+            "active",
+            tab.dataset.markPostView ===
+            (state.markPostView || "all"),
+        )
+    );
 }
 
 function render() {
@@ -158,16 +468,48 @@ function render() {
     );
 
     syncPostControls(state);
-    renderPosts(state, postGrid);
+    renderPosts(
+        markPost_getRenderState(state),
+        postGrid,
+    );
+    markPost_renderOwnerActions(state);
     document.querySelector("#profileState").textContent = state.currentUser ? `Đã đăng nhập: ${state.currentUser.studentId}` : "Bạn chưa đăng nhập.";
 }
 
 document.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => {
-    updateState({ mode: button.dataset.mode });
+    updateState({
+        mode: button.dataset.mode,
+        markPostView: "all",
+    });
     document.querySelectorAll("[data-mode]").forEach(
         item => item.classList.toggle("active", item === button));
     render();
 }));
+
+markPost_tabs.forEach(tab =>
+    tab.addEventListener("click", () => {
+        document
+            .querySelectorAll(".view")
+            .forEach(view => {
+                view.hidden = view.id !== "postsView";
+            });
+
+        document
+            .querySelectorAll("[data-view]")
+            .forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.view === "posts",
+                );
+            });
+
+        updateState({
+            markPostView:
+                tab.dataset.markPostView,
+        });
+        render();
+    })
+);
 
 document.querySelector("#postSearch").addEventListener("input", event => {
     updateFilters({ keyword: event.target.value }); render();
@@ -194,6 +536,10 @@ document.querySelector("#loginButton").addEventListener("click", () => {
 
 document.querySelectorAll("[data-view]").forEach(
     button => button.addEventListener("click", () => {
+        if (button.dataset.view === "posts") {
+            updateState({ markPostView: "all" });
+        }
+
         document
             .querySelectorAll(".view")
             .forEach(view => {
@@ -282,6 +628,9 @@ addPostForm.addEventListener(
                             ? {
                                 ...updatedPost,
                                 marked: post.marked,
+                                ownerStudentId:
+                                    post.ownerStudentId,
+                                status: post.status,
                             }
                             : post
                     ),
@@ -306,7 +655,12 @@ addPostForm.addEventListener(
 
             updateState({
                 posts: [
-                    newPost,
+                    {
+                        ...newPost,
+                        ownerStudentId:
+                            currentUser.studentId,
+                        status: "dang_dang",
+                    },
                     ...state.posts,
                 ],
 
@@ -378,24 +732,32 @@ postGrid.addEventListener("click", event => {
         return;
     }
 
-    if (action !== "mark") {
+    if (action === "markReturned") {
+        markPost_markReturned(postId);
+
         return;
     }
 
-    const posts = getState().posts.map(post =>
-        String(post.id) === postId
-            ? {
-                ...post,
-                marked: !post.marked,
-            }
-            : post
-    );
+    if (action === "confirmReturned") {
+        markPost_confirm(postId);
 
-    updateState({ posts });
-    render();
+        return;
+    }
+
+    if (action === "delete") {
+        markPost_delete(postId);
+    }
 });
 
+const markPost_storedPosts = getState().posts;
 await initializeState();
+
+updateState({
+    posts: markPost_syncPosts(
+        getState().posts,
+        markPost_storedPosts,
+    ),
+});
 
 const categoryOptions =
     Object.entries(categories)
