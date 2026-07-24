@@ -207,7 +207,7 @@ async function handleCreatePost(request, response) {
 function resolveStaticFile(pathname) {
   const requestedPath =
     pathname === "/"
-      ? "index.html"
+      ? "pages/introduction.html"
       : pathname.replace(/^\/+/, "");
 
   const filePath = path.resolve(

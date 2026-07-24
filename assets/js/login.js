@@ -1,6 +1,10 @@
-import { saveCurrentUser } from "./auth.js";
+import { saveCurrentUser, getCurrentUser } from "./auth.js";
 const form = document.querySelector("#loginForm");
 const error = document.querySelector("#loginError");
+
+if (getCurrentUser()) {
+  window.location.replace("../index.html");
+}
 
 form.addEventListener("submit", event => {
     event.preventDefault();
