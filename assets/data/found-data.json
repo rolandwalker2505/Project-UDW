@@ -1,5 +1,21 @@
 [
   {
+    "id": "post-1784879805088",
+    "type": "found",
+    "title": "test add found post",
+    "category": "other",
+    "creator": {
+      "studentId": "1111",
+      "name": "Trần Đăng Khoa"
+    },
+    "content": "test add found post",
+    "location": "Ho Chi Minh City, Ho Chi Minh, Vietnam",
+    "contact": "Unknown",
+    "createTime": "2026-07-24T07:56:45.088Z",
+    "image": null,
+    "marked": false
+  },
+  {
     "id": "post-1784780448826",
     "type": "found",
     "title": "Mèo cam",
