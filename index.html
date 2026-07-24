@@ -30,8 +30,9 @@
         <h1>Đồ thất lạc, rồi sẽ tìm lại được.</h1>
       </div>
       <div class="page-heading__actions">
-        <button id="addPostButton" class="secondary-button" type="button">
-          + Đăng bài mới
+        <button id="addPostButton" class="secondary-button add-post-button" type="button">
+          <span class="add-post-button__icon" aria-hidden="true"></span>
+          <span>Đăng bài mới</span>
         </button>
       </div>
     </section>
@@ -150,7 +151,10 @@
         <div class="add-post-dialog__body">
           <div class="add-post-form__grid">
             <label class="add-post-form__field">
-              Loại bài đăng
+              <span class="add-post-form__label-text">
+                Loại bài đăng
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <select id="addPostType" name="type" required>
                 <option value="lost">
@@ -164,7 +168,10 @@
             </label>
 
             <label class="add-post-form__field">
-              Danh mục
+              <span class="add-post-form__label-text">
+                Danh mục
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <select id="addPostCategory" name="category" required>
                 <option value="">
@@ -174,42 +181,57 @@
             </label>
 
             <label class="add-post-form__field add-post-form__field--full">
-              Tiêu đề
+              <span class="add-post-form__label-text">
+                Tiêu đề
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <input id="addPostTitleInput" name="title" type="text" maxlength="100" required>
             </label>
 
             <label class="add-post-form__field">
-              Họ tên người đăng
+              <span class="add-post-form__label-text">
+                Họ tên người đăng
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <input id="addPostCreatorName" name="creatorName" type="text" maxlength="80" required>
             </label>
 
             <label class="add-post-form__field">
-              Địa điểm
+              <span class="add-post-form__label-text">
+                Địa điểm
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <input id="addPostLocation" name="location" type="text" maxlength="120" required>
             </label>
 
             <label class="add-post-form__field add-post-form__field--full">
-              Thông tin liên hệ
+              <span class="add-post-form__label-text">
+                Thông tin liên hệ
+                <span class="required-mark" aria-hidden="true">*</span>
+              </span>
 
               <input id="addPostContact" name="contact" type="text" maxlength="120"
                 placeholder="Email hoặc số điện thoại" required>
             </label>
 
             <label class="add-post-form__field add-post-form__field--full">
-              Nội dung chi tiết
+              <span class="add-post-form__label-text">
+                Nội dung chi tiết
+              </span>
 
-              <textarea id="addPostContent" name="content" rows="5" maxlength="1000" required></textarea>
+              <textarea id="addPostContent" name="content" rows="5" maxlength="1000"></textarea>
             </label>
 
             <label class="add-post-form__field add-post-form__field--full">
-              Đường dẫn ảnh
+              <span class="add-post-form__label-text">
+                Ảnh bài đăng
+              </span>
               <span>(không bắt buộc)</span>
 
-              <input id="addPostImage" name="image" type="text" maxlength="500"
-                placeholder="https://... hoặc assets/images/...">
+              <input id="addPostImage" name="image" type="file" accept="image/*">
             </label>
           </div>
         </div>

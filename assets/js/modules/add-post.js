@@ -4,11 +4,55 @@ function getFormValue(formData, fieldName) {
     ).trim();
 }
 
+const MAX_IMAGE_SIZE = 650 * 1024;
+
 function createPostId() {
     return `post-${Date.now()}`;
 }
 
-export function createPostFromForm(
+function readImageAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.addEventListener("load", () => {
+            resolve(reader.result);
+        });
+
+        reader.addEventListener("error", () => {
+            reject(
+                new Error(
+                    "Không đọc được ảnh đã chọn.",
+                ),
+            );
+        });
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function getImageDataUrl(formData) {
+    const image = formData.get("image");
+
+    if (!(image instanceof File) || !image.size) {
+        return null;
+    }
+
+    if (!image.type.startsWith("image/")) {
+        throw new Error(
+            "File được chọn không phải là ảnh.",
+        );
+    }
+
+    if (image.size > MAX_IMAGE_SIZE) {
+        throw new Error(
+            "Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 650KB.",
+        );
+    }
+
+    return readImageAsDataUrl(image);
+}
+
+export async function createPostFromForm(
     form,
     currentUser,
 ) {
@@ -18,7 +62,7 @@ export function createPostFromForm(
         getFormValue(formData, "type");
 
     const image =
-        getFormValue(formData, "image");
+        await getImageDataUrl(formData);
 
     return {
         id: createPostId(),
@@ -58,7 +102,7 @@ export function createPostFromForm(
         createTime:
             new Date().toISOString(),
 
-        image: image || null,
+        image,
 
         marked: false,
     };

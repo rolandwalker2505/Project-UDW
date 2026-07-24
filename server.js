@@ -85,7 +85,6 @@ function validatePost(post) {
     "id",
     "title",
     "category",
-    "content",
     "location",
     "contact",
     "createTime",

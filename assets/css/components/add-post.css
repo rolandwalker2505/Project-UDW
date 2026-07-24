@@ -31,6 +31,26 @@
     outline-offset: 2px;
 }
 
+.add-post-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.add-post-button__icon {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 1rem;
+
+    background: currentColor;
+
+    mask:
+        url("../../icons/plus-large-svgrepo-com.svg")
+        center / contain
+        no-repeat;
+}
+
 @media (max-width: 600px) {
     .page-heading__actions {
         width: 100%;
@@ -144,6 +164,17 @@
 
   font-size: 0.875rem;
   font-weight: 700;
+}
+
+.add-post-form__label-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.required-mark {
+  color: #d64545;
+  font-weight: 800;
 }
 
 .add-post-form__field--full {

@@ -183,14 +183,32 @@ addPostForm.addEventListener(
             return;
         }
 
-        const newPost =
-            createPostFromForm(
-                addPostForm,
-                currentUser,
-            );
-
         try {
+            const newPost =
+                await createPostFromForm(
+                    addPostForm,
+                    currentUser,
+                );
+
             await savePostToJson(newPost);
+
+            const state = getState();
+
+            updateState({
+                posts: [
+                    newPost,
+                    ...state.posts,
+                ],
+
+                mode: newPost.type,
+
+                filters: {
+                    ...state.filters,
+                    keyword: "",
+                    category: "all",
+                    sortBy: "createTime-desc",
+                },
+            });
         } catch (error) {
             console.error(
                 "Không lưu được bài đăng.",
@@ -201,24 +219,6 @@ addPostForm.addEventListener(
 
             return;
         }
-
-        const state = getState();
-
-        updateState({
-            posts: [
-                newPost,
-                ...state.posts,
-            ],
-
-            mode: newPost.type,
-
-            filters: {
-                ...state.filters,
-                keyword: "",
-                category: "all",
-                sortBy: "createTime-desc",
-            },
-        });
 
         closeAddPostDialog();
         addPostForm.reset();
