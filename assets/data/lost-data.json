@@ -16,38 +16,6 @@
     "marked": false
   },
   {
-    "id": "post-1784879825156",
-    "type": "lost",
-    "title": "test add lost post",
-    "category": "other",
-    "creator": {
-      "studentId": "1111",
-      "name": "Trần Đăng Khoa"
-    },
-    "content": "test add lost post",
-    "location": "Ho Chi Minh City, Ho Chi Minh, Vietnam",
-    "contact": "Unknown",
-    "createTime": "2026-07-24T07:57:05.156Z",
-    "image": null,
-    "marked": false
-  },
-  {
-    "id": "post-1784780636906",
-    "type": "lost",
-    "title": "Cậu Vàng",
-    "category": "other",
-    "creator": {
-      "studentId": "111",
-      "name": "Trần Đăng Khoa"
-    },
-    "content": "Cậu Vàng đi đời rồi, ông giáo ạ",
-    "location": "Sảnh A, Cơ sở Nhà Bè",
-    "contact": "Unknown",
-    "createTime": "2026-07-23T04:23:56.907Z",
-    "image": "https://cdn-media.sforum.vn/storage/app/media/phuonganh/ket-thuc-trong-tiem-pho-cua-anh-hai-6.jpg",
-    "marked": false
-  },
-  {
     "id": "post-1",
     "type": "lost",
     "title": "Mất thẻ sinh viên",
