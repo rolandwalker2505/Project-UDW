@@ -1,14 +1,78 @@
 import { getState, updateState, updateFilters, initializeState, categories } from "./modules/state.js";
 import { renderPosts } from "./modules/posts.js";
 import { showItemDetail } from "./modules/item-detail.js";
+import { createPostFromForm } from "./modules/add-post.js";
+import { savePostToJson } from "./modules/posts-api.js";
 import { getCurrentUser, clearCurrentUser } from "./auth.js";
 
 const postGrid = document.querySelector("#postGrid");
 const themeToggle = document.querySelector("#themeToggle");
+
+const addPostButton =
+    document.querySelector("#addPostButton");
+
+const addPostDialog =
+    document.querySelector("#addPostDialog");
+
+const addPostForm =
+    document.querySelector("#addPostForm");
+
+const addPostType =
+    document.querySelector("#addPostType");
+
+const addPostCategory =
+    document.querySelector("#addPostCategory");
+
+const closeAddPostButton =
+    document.querySelector("#closeAddPostButton");
+
+const cancelAddPostButton =
+    document.querySelector("#cancelAddPostButton");
+
+const categoryFilter =
+    document.querySelector("#categoryFilter");
+
 if (!getCurrentUser())
     window.location.replace("./pages/login.html");
 else updateState(
     { currentUser: getCurrentUser() });
+
+function openAddPostDialog() {
+    addPostForm.reset();
+
+    addPostType.value =
+        getState().mode;
+
+    if (!addPostDialog.open) {
+        addPostDialog.showModal();
+    }
+}
+
+function closeAddPostDialog() {
+    if (addPostDialog.open) {
+        addPostDialog.close();
+    }
+}
+
+function syncPostControls(state) {
+    document
+        .querySelectorAll("[data-mode]")
+        .forEach((button) => {
+            button.classList.toggle(
+                "active",
+                button.dataset.mode === state.mode,
+            );
+        });
+
+    document.querySelector("#postSearch").value =
+        state.filters.keyword;
+
+    categoryFilter.value =
+        state.filters.category;
+
+    document.querySelector("#sortFilter").value =
+        state.filters.sortBy;
+}
 
 function render() {
     const state = getState();
@@ -32,6 +96,7 @@ function render() {
         String(darkModeEnabled),
     );
 
+    syncPostControls(state);
     renderPosts(state, postGrid);
     document.querySelector("#profileState").textContent = state.currentUser ? `Đã đăng nhập: ${state.currentUser.studentId}` : "Bạn chưa đăng nhập.";
 }
@@ -87,6 +152,80 @@ document.querySelectorAll("[data-view]").forEach(
     })
 );
 
+addPostButton.addEventListener(
+    "click",
+    openAddPostDialog,
+);
+
+closeAddPostButton.addEventListener(
+    "click",
+    closeAddPostDialog,
+);
+
+cancelAddPostButton.addEventListener(
+    "click",
+    closeAddPostDialog,
+);
+
+addPostForm.addEventListener(
+    "submit",
+    async (event) => {
+        event.preventDefault();
+
+        const currentUser =
+            getCurrentUser();
+
+        if (!currentUser) {
+            window.location.replace(
+                "./pages/login.html",
+            );
+
+            return;
+        }
+
+        const newPost =
+            createPostFromForm(
+                addPostForm,
+                currentUser,
+            );
+
+        try {
+            await savePostToJson(newPost);
+        } catch (error) {
+            console.error(
+                "Không lưu được bài đăng.",
+                error,
+            );
+
+            alert(error.message);
+
+            return;
+        }
+
+        const state = getState();
+
+        updateState({
+            posts: [
+                newPost,
+                ...state.posts,
+            ],
+
+            mode: newPost.type,
+
+            filters: {
+                ...state.filters,
+                keyword: "",
+                category: "all",
+                sortBy: "createTime-desc",
+            },
+        });
+
+        closeAddPostDialog();
+        addPostForm.reset();
+        render();
+    },
+);
+
 postGrid.addEventListener("click", event => {
     const button =
         event.target.closest("[data-action]");
@@ -135,6 +274,23 @@ postGrid.addEventListener("click", event => {
 });
 
 await initializeState();
-const categoryFilter = document.querySelector("#categoryFilter");
-categoryFilter.innerHTML = `<option value="all">Tất cả</option>${Object.entries(categories).map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}`;
+
+const categoryOptions =
+    Object.entries(categories)
+        .map(
+            ([value, label]) =>
+                `<option value="${value}">${label}</option>`,
+        )
+        .join("");
+
+categoryFilter.innerHTML = `
+    <option value="all">Tất cả</option>
+    ${categoryOptions}
+`;
+
+addPostCategory.innerHTML = `
+    <option value="">Chọn danh mục</option>
+    ${categoryOptions}
+`;
+
 render();
