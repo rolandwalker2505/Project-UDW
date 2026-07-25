@@ -105,6 +105,10 @@ export async function createPostFromForm(
         image,
 
         marked: false,
+
+        status: "active",
+
+        reports: [],
     };
 }
 

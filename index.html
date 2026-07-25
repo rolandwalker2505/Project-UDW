@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/components/item-detail.css">
   <link rel="stylesheet" href="assets/css/components/add-post.css">
+  <link rel="stylesheet" href="assets/css/components/post-status.css">
 </head>
 
 <body>
@@ -43,6 +44,17 @@
           <button class="mode-button active" data-mode="lost" type="button">Đồ bị mất</button>
           <button class="mode-button" data-mode="found" type="button">Đồ nhặt được</button>
         </div>
+        <div class="filter-switch" role="group" aria-label="Trạng thái bài viết">
+          <button class="filter-switch__button active" data-status-filter="active" type="button">
+            Đang hiển thị
+          </button>
+          <button class="filter-switch__button" data-status-filter="resolved" type="button">
+            Đã hoàn thành
+          </button>
+        </div>
+        <button id="myPostsButton" class="my-posts-button" type="button" aria-pressed="false">
+          Bài của tôi
+        </button>
         <label class="search-box">Tìm kiếm<input id="postSearch" type="search"
             placeholder="Tìm trong tiêu đề, nội dung..."></label>
         <label>Danh mục<select id="categoryFilter">
@@ -246,6 +258,57 @@
           </button>
         </footer>
       </form>
+    </dialog>
+
+    <dialog class="post-status-dialog" id="reportDialog" aria-labelledby="reportDialogTitle">
+      <form class="post-status-form" id="reportForm">
+        <header class="post-status-dialog__header">
+          <div>
+            <p class="eyebrow" id="reportDialogEyebrow">Gửi phản hồi</p>
+            <h2 id="reportDialogTitle">Báo đã tìm thấy đồ</h2>
+          </div>
+          <button class="post-status-dialog__close" id="closeReportButton" type="button" aria-label="Đóng">×</button>
+        </header>
+
+        <div class="post-status-dialog__body">
+          <p class="post-status-dialog__intro" id="reportDialogDescription"></p>
+          <label class="post-status-form__field">
+            Họ tên của bạn <span class="required-mark" aria-hidden="true">*</span>
+            <input name="reporterName" type="text" maxlength="80" required>
+          </label>
+          <label class="post-status-form__field">
+            Thông tin liên hệ <span class="required-mark" aria-hidden="true">*</span>
+            <input name="contact" type="text" maxlength="120" placeholder="Email hoặc số điện thoại" required>
+          </label>
+          <label class="post-status-form__field">
+            Lời nhắn
+            <textarea name="message" rows="4" maxlength="500" placeholder="Ví dụ: Mình nhặt được đồ ở thư viện lúc 10 giờ."></textarea>
+          </label>
+        </div>
+
+        <footer class="post-status-dialog__footer">
+          <button class="secondary-button" id="cancelReportButton" type="button">Hủy</button>
+          <button class="primary-button" type="submit">Gửi phản hồi</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="post-status-dialog" id="reportsDialog" aria-labelledby="reportsDialogTitle">
+      <section class="post-status-form">
+        <header class="post-status-dialog__header">
+          <div>
+            <p class="eyebrow">Phản hồi cho bài đăng</p>
+            <h2 id="reportsDialogTitle">Người đã liên hệ</h2>
+          </div>
+          <button class="post-status-dialog__close" id="closeReportsButton" type="button" aria-label="Đóng">×</button>
+        </header>
+        <div class="post-status-dialog__body">
+          <div id="reportList" class="report-list"></div>
+        </div>
+        <footer class="post-status-dialog__footer">
+          <button class="primary-button" id="doneReportsButton" type="button">Đóng</button>
+        </footer>
+      </section>
     </dialog>
   </main>
   <script type="module" src="assets/js/main.js"></script>
