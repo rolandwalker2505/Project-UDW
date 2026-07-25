@@ -29,7 +29,30 @@
     "contact": "0363989503",
     "createTime": "2026-07-24T19:48:18.746Z",
     "image": null,
-    "marked": false
+    "marked": false,
+    "status": "active",
+    "reports": [
+      {
+        "id": "report-1784950494061",
+        "reporter": {
+          "studentId": "2351010216",
+          "name": "Trần Đăng Khoa"
+        },
+        "contact": "0582981912",
+        "message": "Mình nhặt được lúc 15h trưa cùng ngày",
+        "createdAt": "2026-07-25T03:34:54.061Z"
+      },
+      {
+        "id": "report-1784951579704",
+        "reporter": {
+          "studentId": "SV001",
+          "name": "Trần Đăng Khoa"
+        },
+        "contact": "0582981912",
+        "message": "Tôi là chủ đồ này",
+        "createdAt": "2026-07-25T03:52:59.704Z"
+      }
+    ]
   },
   {
     "id": "post-1784922405063",
@@ -45,7 +68,20 @@
     "contact": "0363989503",
     "createTime": "2026-07-24T19:46:45.063Z",
     "image": null,
-    "marked": false
+    "marked": false,
+    "status": "active",
+    "reports": [
+      {
+        "id": "report-1784951651733",
+        "reporter": {
+          "studentId": "SV001",
+          "name": "Trần Đăng Khoa"
+        },
+        "contact": "0582981912",
+        "message": "Tôi là chủ đồ này. Làm ơn liên hệ để gửi món đồ này cho tôi",
+        "createdAt": "2026-07-25T03:54:11.734Z"
+      }
+    ]
   },
   {
     "id": "post-1784921948026",

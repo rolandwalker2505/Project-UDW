@@ -167,18 +167,15 @@ async function writePostToJson(post) {
   };
 }
 
-async function updatePostInJson(postId, changes, studentId) {
-  if (!studentId) {
-    throw createHttpError(401, "Bạn cần đăng nhập để sửa bài đăng.");
-  }
-
+async function loadPostFiles() {
   const dataDirectory = path.join(
     ROOT_DIRECTORY,
     "assets",
     "data",
   );
   const fileNames = ["lost-data.json", "found-data.json"];
-  const files = await Promise.all(
+
+  return Promise.all(
     fileNames.map(async (fileName) => {
       const filePath = path.join(dataDirectory, fileName);
       const posts = JSON.parse(await readFile(filePath, "utf8"));
@@ -193,6 +190,9 @@ async function updatePostInJson(postId, changes, studentId) {
       return { fileName, filePath, posts };
     }),
   );
+}
+
+function findPostRecord(files, postId) {
   const sourceFile = files.find(({ posts }) =>
     posts.some((post) => String(post.id) === String(postId)),
   );
@@ -204,19 +204,58 @@ async function updatePostInJson(postId, changes, studentId) {
   const postIndex = sourceFile.posts.findIndex(
     (post) => String(post.id) === String(postId),
   );
-  const existingPost = sourceFile.posts[postIndex];
-  const ownerStudentId =
-    existingPost.creator &&
-    typeof existingPost.creator === "object"
-      ? String(existingPost.creator.studentId || "")
-      : "";
 
-  if (ownerStudentId !== String(studentId)) {
+  return {
+    sourceFile,
+    postIndex,
+    post: sourceFile.posts[postIndex],
+  };
+}
+
+function getOwnerStudentId(post) {
+  return post.creator && typeof post.creator === "object"
+    ? String(post.creator.studentId || "")
+    : "";
+}
+
+function assertPostOwner(post, studentId) {
+  if (!studentId) {
     throw createHttpError(
-      403,
-      "Bạn chỉ có thể sửa bài đăng của chính mình.",
+      401,
+      "Bạn cần đăng nhập để thực hiện thao tác này.",
     );
   }
+
+  if (getOwnerStudentId(post) !== String(studentId)) {
+    throw createHttpError(
+      403,
+      "Bạn chỉ có thể thao tác với bài đăng của chính mình.",
+    );
+  }
+}
+
+async function writePostFiles(files) {
+  await Promise.all(
+    [...new Set(files)].map(({ filePath, posts }) =>
+      writeFile(
+        filePath,
+        `${JSON.stringify(posts, null, 2)}\n`,
+        "utf8",
+      ),
+    ),
+  );
+}
+
+async function updatePostInJson(postId, changes, studentId) {
+  const files = await loadPostFiles();
+  const {
+    sourceFile,
+    postIndex,
+    post: existingPost,
+  } = findPostRecord(files, postId);
+  const ownerStudentId = getOwnerStudentId(existingPost);
+
+  assertPostOwner(existingPost, studentId);
 
   const editableFields = [
     "type",
@@ -266,18 +305,129 @@ async function updatePostInJson(postId, changes, studentId) {
   sourceFile.posts.splice(postIndex, 1);
   targetFile.posts.unshift(updatedPost);
 
-  const filesToWrite = new Set([sourceFile, targetFile]);
-  await Promise.all(
-    [...filesToWrite].map(({ filePath, posts }) =>
-      writeFile(
-        filePath,
-        `${JSON.stringify(posts, null, 2)}\n`,
-        "utf8",
-      ),
-    ),
-  );
+  await writePostFiles([sourceFile, targetFile]);
 
   return { fileName: targetFileName, post: updatedPost };
+}
+
+async function updatePostStatusInJson(
+  postId,
+  status,
+  studentId,
+) {
+  if (!["active", "resolved"].includes(status)) {
+    throw createHttpError(400, "Trạng thái bài đăng không hợp lệ.");
+  }
+
+  const files = await loadPostFiles();
+  const {
+    sourceFile,
+    postIndex,
+    post: existingPost,
+  } = findPostRecord(files, postId);
+
+  assertPostOwner(existingPost, studentId);
+
+  const updatedPost = {
+    ...existingPost,
+    status,
+    resolvedAt: status === "resolved"
+      ? new Date().toISOString()
+      : null,
+    reports: Array.isArray(existingPost.reports)
+      ? existingPost.reports
+      : [],
+  };
+
+  sourceFile.posts[postIndex] = updatedPost;
+  await writePostFiles([sourceFile]);
+
+  return { fileName: sourceFile.fileName, post: updatedPost };
+}
+
+function createPostReport(report, studentId) {
+  if (!studentId) {
+    throw createHttpError(401, "Bạn cần đăng nhập để gửi phản hồi.");
+  }
+
+  if (!report || typeof report !== "object") {
+    throw createHttpError(400, "Phản hồi không hợp lệ.");
+  }
+
+  const name = String(report.reporterName || "").trim();
+  const contact = String(report.contact || "").trim();
+  const message = String(report.message || "").trim();
+
+  if (!name || !contact) {
+    throw createHttpError(
+      400,
+      "Vui lòng nhập họ tên và thông tin liên hệ.",
+    );
+  }
+
+  return {
+    id: `report-${Date.now()}`,
+    reporter: {
+      studentId: String(studentId),
+      name,
+    },
+    contact,
+    message,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+async function addPostReportToJson(postId, report, studentId) {
+  const newReport = createPostReport(report, studentId);
+  const files = await loadPostFiles();
+  const {
+    sourceFile,
+    postIndex,
+    post: existingPost,
+  } = findPostRecord(files, postId);
+
+  if (getOwnerStudentId(existingPost) === String(studentId)) {
+    throw createHttpError(
+      400,
+      "Bạn không thể gửi phản hồi cho bài đăng của chính mình.",
+    );
+  }
+
+  if (existingPost.status === "resolved") {
+    throw createHttpError(
+      400,
+      "Bài đăng này đã hoàn thành.",
+    );
+  }
+
+  const reports = Array.isArray(existingPost.reports)
+    ? existingPost.reports
+    : [];
+  const duplicateReport = reports.some(
+    (currentReport) =>
+      String(currentReport.reporter?.studentId || "") ===
+      String(studentId),
+  );
+
+  if (duplicateReport) {
+    throw createHttpError(
+      409,
+      "Bạn đã gửi phản hồi cho bài đăng này.",
+    );
+  }
+
+  const updatedPost = {
+    ...existingPost,
+    status: existingPost.status === "resolved"
+      ? "resolved"
+      : "active",
+    reports: [...reports, newReport],
+  };
+
+  sourceFile.posts[postIndex] = updatedPost;
+  await writePostFiles([sourceFile]);
+
+  return { fileName: sourceFile.fileName, post: updatedPost };
 }
 
 function enqueuePostWrite(writeOperation) {
@@ -337,6 +487,52 @@ async function handleUpdatePost(
       message: error.statusCode
         ? error.message
         : "Không sửa được bài đăng.",
+    });
+  }
+}
+
+async function handleUpdatePostStatus(
+  request,
+  response,
+  postId,
+) {
+  try {
+    const { status } = await readJsonBody(request);
+    const studentId = request.headers["x-student-id"];
+    const result = await enqueuePostWrite(
+      () => updatePostStatusInJson(postId, status, studentId),
+    );
+
+    sendJson(response, 200, result);
+  } catch (error) {
+    console.error("Không cập nhật được trạng thái bài đăng.", error);
+    sendJson(response, error.statusCode || 500, {
+      message: error.statusCode
+        ? error.message
+        : "Không cập nhật được trạng thái bài đăng.",
+    });
+  }
+}
+
+async function handleCreatePostReport(
+  request,
+  response,
+  postId,
+) {
+  try {
+    const report = await readJsonBody(request);
+    const studentId = request.headers["x-student-id"];
+    const result = await enqueuePostWrite(
+      () => addPostReportToJson(postId, report, studentId),
+    );
+
+    sendJson(response, 201, result);
+  } catch (error) {
+    console.error("Không gửi được phản hồi.", error);
+    sendJson(response, error.statusCode || 500, {
+      message: error.statusCode
+        ? error.message
+        : "Không gửi được phản hồi.",
     });
   }
 }
@@ -429,6 +625,32 @@ const server = http.createServer(
       requestUrl.pathname === "/api/posts"
     ) {
       await handleCreatePost(request, response);
+      return;
+    }
+
+    const postStatusMatch = requestUrl.pathname.match(
+      /^\/api\/posts\/([^/]+)\/status$/,
+    );
+
+    if (request.method === "PATCH" && postStatusMatch) {
+      await handleUpdatePostStatus(
+        request,
+        response,
+        decodeURIComponent(postStatusMatch[1]),
+      );
+      return;
+    }
+
+    const postReportMatch = requestUrl.pathname.match(
+      /^\/api\/posts\/([^/]+)\/reports$/,
+    );
+
+    if (request.method === "POST" && postReportMatch) {
+      await handleCreatePostReport(
+        request,
+        response,
+        decodeURIComponent(postReportMatch[1]),
+      );
       return;
     }
 
