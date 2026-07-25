@@ -13,6 +13,15 @@
 </head>
 
 <body>
+  <!-- Overlay mô phỏng trạng thái server đang tải dữ liệu bài đăng. -->
+  <div id="appLoading" class="app-loading" role="status" aria-live="polite">
+    <div class="app-loading__panel">
+      <span class="app-loading__spinner" aria-hidden="true"></span>
+      <span id="appLoadingMessage">Đang tải danh sách bài viết...</span>
+    </div>
+  </div>
+
+  <!-- Thanh điều hướng chính: chuyển view, đăng xuất và đổi giao diện. -->
   <header class="app-navbar">
     <a class="brand" href="./">Đồ thất lạc</a>
     <nav aria-label="Điều hướng chính">
@@ -25,6 +34,7 @@
   </header>
 
   <main class="app-shell">
+    <!-- Tiêu đề trang và nút mở form đăng bài. -->
     <section class="page-heading">
       <div>
         <p class="eyebrow">Cộng đồng sinh viên</p>
@@ -38,6 +48,7 @@
       </div>
     </section>
 
+    <!-- Khu vực danh sách bài viết cùng các bộ lọc. -->
     <section id="postsView" class="view" aria-labelledby="postsTitle">
       <div class="toolbar">
         <div class="mode-switch" role="group" aria-label="Loại bài viết">
@@ -55,8 +66,14 @@
         <button id="myPostsButton" class="my-posts-button" type="button" aria-pressed="false">
           Bài của tôi
         </button>
-        <label class="search-box">Tìm kiếm<input id="postSearch" type="search"
-            placeholder="Tìm trong tiêu đề, nội dung..."></label>
+        <label class="search-box">
+          <span>Tìm kiếm</span>
+          <span id="searchLoading" class="search-loading" role="status" aria-live="polite" hidden>
+            <span class="search-loading__spinner" aria-hidden="true"></span>
+            Đang tìm kiếm...
+          </span>
+          <input id="postSearch" type="search" placeholder="Tìm trong tiêu đề, nội dung...">
+        </label>
         <label>Danh mục<select id="categoryFilter">
             <option value="all">Đang tải danh mục...</option>
           </select></label>
@@ -68,6 +85,7 @@
       <div id="postGrid" class="post-grid" aria-live="polite"></div>
     </section>
 
+    <!-- Khu vực thông tin tài khoản hiện tại. -->
     <section id="profileView" class="view" hidden>
       <div class="empty-state">
         <h2>Tài khoản</h2>
@@ -75,6 +93,7 @@
       </div>
     </section>
 
+    <!-- Dialog hiển thị đầy đủ thông tin của một bài đăng. -->
     <dialog class="item-detail-dialog" id="itemDetailDialog" aria-labelledby="itemDetailTitle">
       <div class="item-detail-dialog__panel">
         <header class="item-detail-dialog__header">
@@ -144,6 +163,7 @@
       </div>
     </dialog>
 
+    <!-- Form dùng chung cho thao tác tạo mới và chỉnh sửa bài đăng. -->
     <dialog class="add-post-dialog" id="addPostDialog" aria-labelledby="addPostTitle">
       <form class="add-post-form" id="addPostForm">
         <header class="add-post-dialog__header">
@@ -260,6 +280,7 @@
       </form>
     </dialog>
 
+    <!-- Dialog để người dùng gửi thông tin phản hồi cho chủ bài. -->
     <dialog class="post-status-dialog" id="reportDialog" aria-labelledby="reportDialogTitle">
       <form class="post-status-form" id="reportForm">
         <header class="post-status-dialog__header">
@@ -293,6 +314,7 @@
       </form>
     </dialog>
 
+    <!-- Dialog dành cho chủ bài xem danh sách người đã phản hồi. -->
     <dialog class="post-status-dialog" id="reportsDialog" aria-labelledby="reportsDialogTitle">
       <section class="post-status-form">
         <header class="post-status-dialog__header">
@@ -311,6 +333,8 @@
       </section>
     </dialog>
   </main>
+
+  <!-- Module chính khởi tạo dữ liệu và gắn toàn bộ sự kiện của dashboard. -->
   <script type="module" src="assets/js/main.js"></script>
 </body>
 

@@ -3,6 +3,7 @@ import {
   saveTheme,
 } from "./storage.js";
 
+// Các giá trị theme duy nhất được ứng dụng hỗ trợ.
 const LIGHT_THEME = "light";
 const DARK_THEME = "dark";
 
@@ -12,6 +13,7 @@ function normalizeTheme(theme) {
     : LIGHT_THEME;
 }
 
+// Dùng nút có sẵn hoặc tạo nút nổi cho những trang chưa khai báo nút theme.
 function getThemeToggle() {
   const existingToggle =
     document.querySelector("#themeToggle");
@@ -32,6 +34,7 @@ function getThemeToggle() {
   return themeToggle;
 }
 
+// Cập nhật biểu tượng và thuộc tính hỗ trợ accessibility của nút theme.
 function updateThemeToggle(themeToggle, theme) {
   const darkModeEnabled =
     theme === DARK_THEME;
@@ -52,6 +55,7 @@ function updateThemeToggle(themeToggle, theme) {
   );
 }
 
+// Áp dụng theme lên thẻ html để CSS chọn đúng bộ màu.
 function applyTheme(theme, themeToggle) {
   const normalizedTheme =
     normalizeTheme(theme);
@@ -67,6 +71,7 @@ function applyTheme(theme, themeToggle) {
   return normalizedTheme;
 }
 
+// Khởi tạo theme đã lưu và xử lý thao tác chuyển sáng/tối.
 export function initializeTheme() {
   const themeToggle = getThemeToggle();
 

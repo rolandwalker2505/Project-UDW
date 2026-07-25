@@ -1,3 +1,4 @@
+/* Khung dialog chi tiết và lớp backdrop che nội dung phía sau. */
 .item-detail-dialog {
     width: min(calc(100% - 2rem), 52rem);
     max-height: calc(100dvh - 2rem);
@@ -79,6 +80,7 @@
     background: var(--surface-2);
 }
 
+/* Chia nội dung dialog thành khu vực ảnh và khu vực thông tin. */
 .item-detail-dialog__body {
     display: grid;
     overflow-y: auto;
@@ -128,6 +130,7 @@
     display: none;
 }
 
+/* Danh sách nhãn/giá trị mô tả chi tiết bài đăng. */
 .item-detail-dialog__list {
     display: grid;
     align-content: start;
@@ -160,6 +163,7 @@
     white-space: pre-line;
 }
 
+/* Footer, nút đóng và trạng thái focus hỗ trợ bàn phím. */
 .item-detail-dialog__footer {
     justify-content: flex-end;
 
@@ -191,6 +195,7 @@
     outline-offset: 3px;
 }
 
+/* Chuyển dialog về một cột trên màn hình nhỏ. */
 @media (max-width: 640px) {
     .item-detail-dialog__body {
         grid-template-columns: 1fr;

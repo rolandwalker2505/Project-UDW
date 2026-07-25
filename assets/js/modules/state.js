@@ -1,7 +1,9 @@
 import { saveState, loadState } from "./storage.js";
 
+// Danh mục được tải từ file JSON khi ứng dụng khởi tạo.
 export let categories = {};
 
+// Trạng thái mặc định dùng cho lần truy cập đầu tiên.
 const fallback = {
   currentUser: null,
   theme: "light",
@@ -16,6 +18,7 @@ const fallback = {
 let state = loadState(fallback);
 export const getState = () => state;
 
+// Đồng bộ dữ liệu mới từ JSON nhưng vẫn giữ trạng thái yêu thích ở trình duyệt.
 function syncPostsFromJson(jsonPosts, storedPosts) {
   const storedPostsById = new Map(
     storedPosts.map(post => [
@@ -37,6 +40,7 @@ function syncPostsFromJson(jsonPosts, storedPosts) {
   });
 }
 
+// Tải song song danh mục và hai danh sách bài đăng từ server.
 export async function initializeState() {
   try {
     const categoryResponse = await fetch("./assets/data/category.json");
@@ -66,11 +70,15 @@ export async function initializeState() {
   }
   return state;
 }
+
+// Cập nhật một phần state và lưu lại để giữ trạng thái sau khi reload.
 export function updateState(patch) {
   state = { ...state, ...patch };
   saveState(state);
   return state;
 }
+
+// Cập nhật riêng bộ lọc mà không làm mất các giá trị lọc còn lại.
 export function updateFilters(filters) {
   return updateState({
     filters: {
@@ -78,6 +86,8 @@ export function updateFilters(filters) {
     }
   });
 }
+
+// Đưa ứng dụng về trạng thái mặc định.
 export function resetState() {
   state = structuredClone(fallback);
   saveState(state);

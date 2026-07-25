@@ -1,3 +1,4 @@
+// Gửi bài đăng mới đến API và trả về bản ghi đã được lưu.
 export async function savePostToJson(post) {
     const response = await fetch(
         "/api/posts",
@@ -31,6 +32,7 @@ export async function savePostToJson(post) {
     return result.post;
 }
 
+// Gửi các trường chỉnh sửa; mã sinh viên được dùng để kiểm tra chủ bài.
 export async function updatePostInJson(
     postId,
     changes,
@@ -66,6 +68,7 @@ export async function updatePostInJson(
     return result.post;
 }
 
+// Hàm dùng chung để gọi API và chuẩn hóa cách đọc lỗi JSON.
 async function requestPostApi(path, options, fallbackMessage) {
     const response = await fetch(path, options);
 
@@ -86,6 +89,7 @@ async function requestPostApi(path, options, fallbackMessage) {
     return result.post;
 }
 
+// Cập nhật trạng thái active/resolved của một bài đăng.
 export function updatePostStatusInJson(
     postId,
     status,
@@ -105,6 +109,7 @@ export function updatePostStatusInJson(
     );
 }
 
+// Gửi phản hồi của người tìm thấy hoặc người nhận là chủ đồ.
 export function addPostReportToJson(
     postId,
     report,

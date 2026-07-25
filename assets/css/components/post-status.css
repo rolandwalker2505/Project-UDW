@@ -1,3 +1,4 @@
+/* Nhóm nút lọc, nút bài của tôi và các hành động trên bài đăng. */
 .mode-switch,
 .filter-switch {
   display: flex;
@@ -103,6 +104,7 @@
   outline-offset: 2px;
 }
 
+/* Badge trạng thái và bố cục khu vực hành động của post card. */
 .post-card-status {
   display: inline-flex;
   align-items: center;
@@ -169,6 +171,7 @@
   flex: 0 1 auto;
 }
 
+/* Dialog gửi phản hồi và dialog xem danh sách phản hồi. */
 .post-status-dialog {
   width: min(calc(100% - 2rem), 34rem);
   max-height: calc(100dvh - 2rem);
@@ -245,6 +248,7 @@
   line-height: 1.55;
 }
 
+/* Các trường nhập liên hệ và lời nhắn trong form phản hồi. */
 .post-status-form__field {
   display: grid;
   gap: 0.4rem;
@@ -285,6 +289,7 @@
   border-top: 1px solid var(--line);
 }
 
+/* Danh sách phản hồi hiển thị cho chủ bài đăng. */
 .report-list {
   display: grid;
   gap: 0.75rem;
@@ -315,6 +320,7 @@
   line-height: 1.5;
 }
 
+/* Bố cục nút và dialog trên màn hình nhỏ. */
 @media (max-width: 600px) {
   .mode-switch,
   .filter-switch,

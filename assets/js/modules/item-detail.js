@@ -1,3 +1,4 @@
+// Chuẩn hóa thời gian và thông tin người đăng trước khi hiển thị.
 function formatCreateTime(createTime) {
     const date = new Date(createTime);
 
@@ -38,6 +39,7 @@ function getCreatorStudentId(creator) {
     return "Không xác định";
 }
 
+// Gán text an toàn cho một trường trong dialog, có hỗ trợ giá trị dự phòng.
 function setText(selector, value, fallback) {
     const element = document.querySelector(selector);
 
@@ -48,6 +50,7 @@ function setText(selector, value, fallback) {
     element.textContent = value || fallback;
 }
 
+// Cập nhật riêng phần thời gian của dialog chi tiết.
 function updateDetailTime(createTime) {
     const timeElement =
         document.querySelector("#itemDetailTime");
@@ -61,6 +64,7 @@ function updateDetailTime(createTime) {
         formatCreateTime(createTime);
 }
 
+// Hiển thị ảnh bài đăng hoặc placeholder khi thiếu/lỗi ảnh.
 function updateDetailImage(post) {
     const image =
         document.querySelector("#itemDetailImage");
@@ -103,6 +107,7 @@ function updateDetailImage(post) {
     };
 }
 
+// Đổ dữ liệu bài đăng vào dialog và mở hộp thoại chi tiết.
 export function showItemDetail(
     post,
     categoryLabel,

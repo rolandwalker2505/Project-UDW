@@ -1,11 +1,13 @@
 import { categories } from "./state.js";
 
+// Chuẩn hóa trạng thái cũ: bài không ghi rõ resolved được xem là active.
 function getPostStatus(post) {
   return post.status === "resolved"
     ? "resolved"
     : "active";
 }
 
+// So sánh mã sinh viên để xác định quyền thao tác trên bài.
 function isPostOwner(post, currentUser) {
   return Boolean(
     currentUser?.studentId &&
@@ -14,6 +16,7 @@ function isPostOwner(post, currentUser) {
   );
 }
 
+// Kiểm tra người dùng hiện tại đã phản hồi bài này hay chưa.
 function hasReported(post, currentUser) {
   const studentId = currentUser?.studentId;
 
@@ -28,6 +31,7 @@ function hasReported(post, currentUser) {
   );
 }
 
+// Áp dụng loại bài, danh mục, trạng thái, phạm vi, tìm kiếm và sắp xếp.
 export function getVisiblePosts(state) {
   const {
     keyword,
@@ -78,6 +82,7 @@ export function getVisiblePosts(state) {
     });
 }
 
+// Các hàm bên dưới tạo từng phần giao diện của một post card.
 function formatCreateTime(createTime) {
   const date = new Date(createTime);
 
@@ -231,6 +236,7 @@ function createEmptyState(state) {
   `;
 }
 
+// Render danh sách bài ra DOM và thay ảnh lỗi bằng placeholder.
 export function renderPosts(state, target) {
   const posts = getVisiblePosts(state);
 
@@ -320,6 +326,7 @@ export function renderPosts(state, target) {
     });
 }
 
+// Escape dữ liệu trước khi chèn vào chuỗi HTML để tránh tạo markup ngoài ý muốn.
 function escapeHtml(value) {
   return String(value).replace(
     /[&<>"']/g,

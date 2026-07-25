@@ -1,5 +1,7 @@
+// Module đọc và ghi trạng thái chung của ứng dụng vào localStorage.
 const KEY = "findagain-state";
 
+// Đọc dữ liệu đã lưu và tự phục hồi khi JSON không hợp lệ.
 function readStoredState() {
   try {
     const value = JSON.parse(
@@ -14,10 +16,12 @@ function readStoredState() {
   }
 }
 
+// Chỉ chấp nhận hai giao diện hợp lệ, mặc định là light.
 function normalizeTheme(theme) {
   return theme === "dark" ? "dark" : "light";
 }
 
+// Ghép trạng thái đã lưu với cấu hình mặc định để tương thích dữ liệu cũ.
 export function loadState(fallback) {
   const storedState = readStoredState();
   const defaultState = structuredClone(fallback);
@@ -43,6 +47,7 @@ export function loadState(fallback) {
   };
 }
 
+// Lưu toàn bộ trạng thái ứng dụng sau mỗi lần cập nhật.
 export function saveState(state) {
   localStorage.setItem(
     KEY,
@@ -50,6 +55,7 @@ export function saveState(state) {
   );
 }
 
+// Hai hàm riêng cho theme giúp các trang không cần tải toàn bộ state.
 export function loadTheme() {
   return normalizeTheme(
     readStoredState()?.theme,

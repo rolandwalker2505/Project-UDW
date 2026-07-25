@@ -9,6 +9,15 @@
 </head>
 
 <body>
+    <!-- Overlay chỉ hiện trong lúc chuyển sang dashboard sau khi đăng nhập. -->
+    <div id="appLoading" class="app-loading" role="status" aria-live="polite" hidden>
+        <div class="app-loading__panel">
+            <span class="app-loading__spinner" aria-hidden="true"></span>
+            <span id="appLoadingMessage">Đang đăng nhập...</span>
+        </div>
+    </div>
+
+    <!-- Form đăng nhập bằng mã số sinh viên gồm đúng 10 chữ số. -->
     <main class="auth-shell">
         <section class="auth-card">
             <p class="eyebrow">Cộng đồng sinh viên</p>
@@ -16,13 +25,19 @@
             <p>Nhập mã số sinh viên để tiếp tục.</p>
             <form id="loginForm">
                 <label for="studentId">Mã số sinh viên</label>
-                <input id="studentId" name="studentId" required pattern="[A-Za-z0-9-]{3,30}" autocomplete="username">
+                <input id="studentId" name="studentId" type="text" inputmode="numeric" autocomplete="username"
+                    minlength="10" maxlength="10" pattern="[0-9]{10}" aria-describedby="loginError"
+                    title="Mã số sinh viên phải gồm đúng 10 chữ số." required>
                 <button class="primary-button" type="submit">Vào dashboard</button>
-                <p id="loginError" class="form-error" role="alert" hidden>Mã số sinh viên không hợp lệ.</p>
+                <p id="loginError" class="form-error" role="alert" hidden>
+                    Mã số sinh viên phải gồm đúng 10 chữ số.
+                </p>
             </form>
             <a href="./introduction.html">Quay lại</a>
         </section>
     </main>
+
+    <!-- Theme được khởi tạo trước, sau đó login.js xử lý validation và đăng nhập. -->
     <script type="module" src="../assets/js/theme-init.js"></script>
     <script type="module" src="../assets/js/login.js"></script>
 </body>

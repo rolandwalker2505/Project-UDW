@@ -1,5 +1,113 @@
 [
   {
+    "id": "seed-found-20260725-01",
+    "type": "found",
+    "title": "Nhặt được hộp tai nghe không dây",
+    "category": "other",
+    "creator": {
+      "studentId": "DEMO201",
+      "name": "Bùi Thanh Tùng"
+    },
+    "content": "Hộp tai nghe màu trắng, bên ngoài có bọc silicon màu xanh nhạt.",
+    "location": "Ghế đá trước dãy C",
+    "contact": "demo201@example.com",
+    "createTime": "2026-07-25T04:35:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-found-20260725-02",
+    "type": "found",
+    "title": "Nhặt được thẻ sinh viên trong thư viện",
+    "category": "student-card",
+    "creator": {
+      "studentId": "DEMO202",
+      "name": "Ngô Hải Yến"
+    },
+    "content": "Thẻ được tìm thấy cạnh máy tra cứu sách. Chủ thẻ vui lòng cung cấp thông tin để xác nhận.",
+    "location": "Tầng 2 thư viện",
+    "contact": "demo202@example.com",
+    "createTime": "2026-07-25T04:10:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-found-20260725-03",
+    "type": "found",
+    "title": "Có bạn để quên chìa khóa xe",
+    "category": "keys",
+    "creator": {
+      "studentId": "DEMO203",
+      "name": "Đỗ Khánh Linh"
+    },
+    "content": "Một chìa khóa xe máy có móc kim loại hình ngôi sao.",
+    "location": "Bàn cuối phòng B204",
+    "contact": "demo203@example.com",
+    "createTime": "2026-07-25T03:45:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-found-20260725-04",
+    "type": "found",
+    "title": "Nhặt được bình nước màu hồng",
+    "category": "water-bottle",
+    "creator": {
+      "studentId": "DEMO204",
+      "name": "Hồ Phương Vy"
+    },
+    "content": "Bình nhựa trong màu hồng, trên thân có dán nhãn hình chú mèo.",
+    "location": "Sân thể thao",
+    "contact": "demo204@example.com",
+    "createTime": "2026-07-25T03:20:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-found-20260725-05",
+    "type": "found",
+    "title": "Nhặt được ví vải màu đen",
+    "category": "wallet",
+    "creator": {
+      "studentId": "DEMO205",
+      "name": "Mai Đức Anh"
+    },
+    "content": "Ví vải có khóa kéo, bên trong không có tiền nhưng có một số giấy tờ.",
+    "location": "Khu vực máy bán nước tự động",
+    "contact": "demo205@example.com",
+    "createTime": "2026-07-25T02:55:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-found-20260725-06",
+    "type": "found",
+    "title": "Nhặt được thẻ giữ xe gần cổng trường",
+    "category": "vehicle-card",
+    "creator": {
+      "studentId": "DEMO206",
+      "name": "Lý Nhật Minh"
+    },
+    "content": "Thẻ giữ xe có góc bị gập nhẹ, được nhặt ở lối đi từ cổng vào bãi xe.",
+    "location": "Cổng chính cơ sở Nhà Bè",
+    "contact": "demo206@example.com",
+    "createTime": "2026-07-25T02:30:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
     "id": "post-1784922741382",
     "type": "found",
     "title": "nhặt",

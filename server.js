@@ -1,3 +1,4 @@
+// HTTP server thuần Node.js: vừa phục vụ file tĩnh, vừa cung cấp API bài đăng.
 const http = require("node:http");
 const path = require("node:path");
 const {
@@ -6,6 +7,7 @@ const {
   writeFile,
 } = require("node:fs/promises");
 
+// Cấu hình server và giới hạn dữ liệu gửi lên.
 const HOST = "localhost";
 const PORT = Number(process.env.PORT) || 5500;
 const ROOT_DIRECTORY = __dirname;
@@ -25,8 +27,10 @@ const CONTENT_TYPES = {
   ".webp": "image/webp",
 };
 
+// Xếp các thao tác ghi file theo thứ tự để tránh hai request ghi đè nhau.
 let postWriteQueue = Promise.resolve();
 
+// Các helper tạo lỗi, gửi JSON và đọc request body.
 function createHttpError(statusCode, message) {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -66,6 +70,7 @@ async function readJsonBody(request) {
   }
 }
 
+// Kiểm tra các trường bắt buộc trước khi ghi một bài đăng vào file.
 function validatePost(post) {
   if (!post || typeof post !== "object") {
     throw createHttpError(
@@ -116,6 +121,7 @@ function validatePost(post) {
   }
 }
 
+// Chọn file lost/found tương ứng và thêm bài mới vào đầu danh sách.
 async function writePostToJson(post) {
   validatePost(post);
 
@@ -167,6 +173,7 @@ async function writePostToJson(post) {
   };
 }
 
+// Tải đồng thời hai file bài đăng để phục vụ các thao tác cập nhật.
 async function loadPostFiles() {
   const dataDirectory = path.join(
     ROOT_DIRECTORY,
@@ -192,6 +199,7 @@ async function loadPostFiles() {
   );
 }
 
+// Tìm bài theo ID trong hai file dữ liệu.
 function findPostRecord(files, postId) {
   const sourceFile = files.find(({ posts }) =>
     posts.some((post) => String(post.id) === String(postId)),
@@ -212,6 +220,7 @@ function findPostRecord(files, postId) {
   };
 }
 
+// Nhóm helper xác định và kiểm tra chủ sở hữu bài đăng.
 function getOwnerStudentId(post) {
   return post.creator && typeof post.creator === "object"
     ? String(post.creator.studentId || "")
@@ -234,6 +243,7 @@ function assertPostOwner(post, studentId) {
   }
 }
 
+// Ghi lại một hoặc nhiều file dữ liệu sau khi thay đổi.
 async function writePostFiles(files) {
   await Promise.all(
     [...new Set(files)].map(({ filePath, posts }) =>
@@ -246,6 +256,7 @@ async function writePostFiles(files) {
   );
 }
 
+// Chỉ nhận các trường được phép sửa và chuyển file nếu loại bài thay đổi.
 async function updatePostInJson(postId, changes, studentId) {
   const files = await loadPostFiles();
   const {
@@ -310,6 +321,7 @@ async function updatePostInJson(postId, changes, studentId) {
   return { fileName: targetFileName, post: updatedPost };
 }
 
+// Đóng bài đã hoàn thành hoặc mở lại bài theo yêu cầu của chủ bài.
 async function updatePostStatusInJson(
   postId,
   status,
@@ -345,6 +357,7 @@ async function updatePostStatusInJson(
   return { fileName: sourceFile.fileName, post: updatedPost };
 }
 
+// Chuẩn hóa dữ liệu phản hồi và gắn thông tin người gửi.
 function createPostReport(report, studentId) {
   if (!studentId) {
     throw createHttpError(401, "Bạn cần đăng nhập để gửi phản hồi.");
@@ -377,6 +390,7 @@ function createPostReport(report, studentId) {
   };
 }
 
+// Thêm phản hồi, đồng thời chặn chủ bài và người đã phản hồi trước đó.
 async function addPostReportToJson(postId, report, studentId) {
   const newReport = createPostReport(report, studentId);
   const files = await loadPostFiles();
@@ -430,6 +444,7 @@ async function addPostReportToJson(postId, report, studentId) {
   return { fileName: sourceFile.fileName, post: updatedPost };
 }
 
+// Đưa mọi thao tác ghi vào cùng một hàng đợi tuần tự.
 function enqueuePostWrite(writeOperation) {
   const queuedOperation = postWriteQueue.then(
     writeOperation,
@@ -440,6 +455,7 @@ function enqueuePostWrite(writeOperation) {
   return queuedOperation;
 }
 
+// Các handler API chuyển lỗi nghiệp vụ thành HTTP response phù hợp.
 async function handleCreatePost(request, response) {
   try {
     const post = await readJsonBody(request);
@@ -537,6 +553,7 @@ async function handleCreatePostReport(
   }
 }
 
+// Chuẩn hóa đường dẫn và đảm bảo request không đi ra ngoài thư mục dự án.
 function resolveStaticFile(pathname) {
   const requestedPath =
     pathname === "/"
@@ -557,6 +574,7 @@ function resolveStaticFile(pathname) {
   return isInsideProject ? filePath : null;
 }
 
+// Đọc file tĩnh, gắn Content-Type và điều khiển cache theo phần mở rộng.
 async function serveStaticFile(request, response, pathname) {
   const filePath = resolveStaticFile(pathname);
 
@@ -613,6 +631,7 @@ async function serveStaticFile(request, response, pathname) {
   }
 }
 
+// Router chính: ưu tiên API trước, sau đó mới phục vụ HTML/CSS/JS.
 const server = http.createServer(
   async (request, response) => {
     const requestUrl = new URL(
@@ -692,6 +711,7 @@ const server = http.createServer(
   },
 );
 
+// Bắt đầu lắng nghe request tại cổng đã cấu hình.
 server.listen(PORT, HOST, () => {
   console.log(
     `Ứng dụng đang chạy tại http://${HOST}:${PORT}`,

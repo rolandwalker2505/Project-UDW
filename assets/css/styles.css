@@ -1,3 +1,4 @@
+/* Màu nền tảng dùng trước khi bộ biến theme đầy đủ được khai báo. */
 :root {
   --ink: #f7fbff;
   --muted: #b8c7d9;
@@ -7,6 +8,7 @@
   --night: #071a2b;
 }
 
+/* Reset cơ bản và kiểu chữ chung cho toàn bộ ứng dụng. */
 html,
 body {
   min-height: 100%;
@@ -26,10 +28,71 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Overlay dùng chung cho tải dữ liệu, gửi form và chuyển trang. */
+.app-loading {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+
+  background: rgb(7 26 43 / 72%);
+  backdrop-filter: blur(4px);
+}
+
+.app-loading[hidden] {
+  display: none;
+}
+
+.app-loading__panel {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  min-width: min(100%, 16rem);
+  padding: 1.5rem 2rem;
+
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  box-shadow: var(--card-shadow);
+
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.app-loading__spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+
+  border: 0.25rem solid var(--line);
+  border-top-color: var(--action);
+  border-radius: 50%;
+
+  animation: app-loading-spin 800ms linear infinite;
+}
+
+@keyframes app-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading__spinner,
+  .search-loading__spinner {
+    animation: none;
+  }
+}
+
 .app-navbar:empty {
   display: none;
 }
 
+/* Trang giới thiệu và các hình trang trí tạo hoàn toàn bằng CSS. */
 .intro-hero {
   position: relative;
   isolation: isolate;
@@ -185,6 +248,7 @@ body {
   line-height: 1.6;
 }
 
+/* Responsive cho trang giới thiệu và người dùng hạn chế chuyển động. */
 @media (max-width: 991.98px) {
   .intro-hero::before {
     top: 12%;
@@ -235,7 +299,7 @@ body {
   }
 }
 
-/* Application shell */
+/* Bộ biến màu chính cho giao diện sáng và tối. */
 :root {
   --surface: #ffffff;
   --surface-2: #eef6f4;
@@ -273,6 +337,7 @@ body {
   background: var(--surface-2);
 }
 
+/* Thanh điều hướng, logo, nút chuyển view và nút đổi theme. */
 .app-navbar {
   display: flex;
   align-items: center;
@@ -365,6 +430,7 @@ body {
   outline-offset: 2px;
 }
 
+/* Khung nội dung, tiêu đề và các nút dùng chung. */
 .app-shell {
   width: min(100% - 2rem, 78rem);
   margin: 0 auto;
@@ -409,6 +475,7 @@ body {
   background: var(--action-hover);
 }
 
+/* Thanh tìm kiếm, lọc danh mục, sắp xếp và chuyển loại bài. */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -443,6 +510,29 @@ body {
   width: 100%;
 }
 
+/* Loading nhỏ bên cạnh ô tìm kiếm, không che và không khóa toàn bộ trang. */
+.search-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.search-loading[hidden] {
+  display: none;
+}
+
+.search-loading__spinner {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 0.12rem solid var(--line);
+  border-top-color: var(--action);
+  border-radius: 50%;
+  animation: app-loading-spin 650ms linear infinite;
+}
+
 .mode-switch {
   display: flex;
   gap: .25rem;
@@ -466,6 +556,7 @@ body {
   background: var(--action);
 }
 
+/* Lưới bài đăng, card, badge danh mục và trạng thái yêu thích. */
 .post-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
@@ -506,6 +597,20 @@ body {
   font-size: .8rem;
 }
 
+/* Cho địa điểm co giãn, còn thời gian giữ nguyên vị trí bên phải. */
+.post-card footer > span {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.post-card footer > time {
+  flex: 0 0 auto;
+  margin-left: auto;
+  white-space: nowrap;
+  text-align: right;
+}
+
 .category-badge {
   padding: .25rem .5rem;
   color: var(--action);
@@ -532,6 +637,7 @@ body {
   text-align: center;
 }
 
+/* Bố cục dashboard trên màn hình nhỏ. */
 @media (max-width:600px) {
   .app-navbar {
     gap: .5rem;
@@ -565,6 +671,7 @@ body {
   }
 }
 
+/* Trang đăng nhập và thông báo validation. */
 .auth-shell {
   min-height: 100svh;
   display: grid;
@@ -609,6 +716,7 @@ body {
 
 
 
+/* Ảnh đại diện và nhóm nút thao tác trên từng post card. */
 .post-card-media {
   display: grid;
   width: 100%;

@@ -1,3 +1,4 @@
+// Ghép các module state, render, form, API và xác thực cho trang dashboard.
 import {
     categories,
     getState,
@@ -19,7 +20,10 @@ import {
 } from "./modules/posts-api.js";
 import { clearCurrentUser, getCurrentUser } from "./auth.js";
 
+// Tham chiếu các phần tử giao diện được sử dụng nhiều lần.
 const postGrid = document.querySelector("#postGrid");
+const appLoading = document.querySelector("#appLoading");
+const appLoadingMessage = document.querySelector("#appLoadingMessage");
 const themeToggle = document.querySelector("#themeToggle");
 const addPostButton = document.querySelector("#addPostButton");
 const addPostDialog = document.querySelector("#addPostDialog");
@@ -33,12 +37,17 @@ const cancelAddPostButton = document.querySelector(
     "#cancelAddPostButton",
 );
 const categoryFilter = document.querySelector("#categoryFilter");
+const postSearch = document.querySelector("#postSearch");
+const searchLoading = document.querySelector("#searchLoading");
 const postFormEyebrow = document.querySelector("#postFormEyebrow");
 const postFormTitle = document.querySelector("#addPostTitle");
 const submitPostButton = document.querySelector("#submitPostButton");
 const myPostsButton = document.querySelector("#myPostsButton");
 const reportDialog = document.querySelector("#reportDialog");
 const reportForm = document.querySelector("#reportForm");
+const reportSubmitButton = reportForm.querySelector(
+    'button[type="submit"]',
+);
 const reportDialogEyebrow = document.querySelector(
     "#reportDialogEyebrow",
 );
@@ -60,9 +69,52 @@ const doneReportsButton = document.querySelector(
     "#doneReportsButton",
 );
 
+// Thời gian tối thiểu giúp spinner không bị nhấp nháy khi API phản hồi quá nhanh.
+const MIN_LOADING_TIME = 320;
+const SEARCH_DEBOUNCE_TIME = 280;
+let searchTimer = null;
+
+// Bật/tắt overlay và cập nhật thông báo cho người dùng.
+function setAppLoading(isLoading, message) {
+    if (!appLoading) {
+        return;
+    }
+
+    if (message && appLoadingMessage) {
+        appLoadingMessage.textContent = message;
+    }
+
+    appLoading.hidden = !isLoading;
+    document.body.setAttribute("aria-busy", String(isLoading));
+}
+
+// Bao bọc một tác vụ bất đồng bộ bằng hiệu ứng loading có thời lượng tối thiểu.
+async function withAppLoading(task, message) {
+    const startedAt = performance.now();
+
+    setAppLoading(true, message);
+
+    try {
+        return await task();
+    } finally {
+        const elapsed = performance.now() - startedAt;
+        const remaining = MIN_LOADING_TIME - elapsed;
+
+        if (remaining > 0) {
+            await new Promise((resolve) => {
+                window.setTimeout(resolve, remaining);
+            });
+        }
+
+        setAppLoading(false);
+    }
+}
+
+// Lưu ID đang thao tác để một form có thể dùng cho nhiều bài khác nhau.
 let editingPostId = null;
 let reportingPostId = null;
 
+// Kiểm tra phiên đăng nhập và đồng bộ tài khoản hiện tại vào state.
 const currentUser = getCurrentUser();
 const storedStudentId = getState().currentUser?.studentId;
 const accountChanged = currentUser &&
@@ -89,6 +141,7 @@ if (!currentUser) {
     });
 }
 
+// Các helper kiểm tra trạng thái, quyền sở hữu và tìm bài theo ID.
 function getPostStatus(post) {
     return post.status === "resolved"
         ? "resolved"
@@ -109,6 +162,7 @@ function getPostById(postId) {
     );
 }
 
+// Nhóm hàm đóng dialog và xóa trạng thái thao tác tạm thời.
 function closeAddPostDialog() {
     if (addPostDialog.open) {
         addPostDialog.close();
@@ -132,6 +186,7 @@ function closeReportsDialog() {
     }
 }
 
+// Mở form ở chế độ tạo bài mới.
 function openAddPostDialog() {
     editingPostId = null;
     addPostForm.reset();
@@ -145,6 +200,7 @@ function openAddPostDialog() {
     }
 }
 
+// Điền dữ liệu bài cũ vào form để người dùng chỉnh sửa.
 function openEditPostDialog(post) {
     if (!isPostOwner(post, getCurrentUser())) {
         alert("Bạn chỉ có thể sửa bài đăng của chính mình.");
@@ -169,6 +225,7 @@ function openEditPostDialog(post) {
     }
 }
 
+// Chuẩn bị nội dung dialog phản hồi tùy theo bài mất hoặc bài nhặt được.
 function openReportDialog(post) {
     if (isPostOwner(post, getCurrentUser())) {
         alert("Bạn không thể gửi phản hồi cho bài đăng của chính mình.");
@@ -199,6 +256,7 @@ function openReportDialog(post) {
     }
 }
 
+// Định dạng và hiển thị danh sách phản hồi dành cho chủ bài.
 function formatReportTime(createdAt) {
     const date = new Date(createdAt);
 
@@ -255,6 +313,7 @@ function openReportsDialog(post) {
     }
 }
 
+// Thay bài đã cập nhật trong state nhưng vẫn giữ đánh dấu yêu thích cục bộ.
 function replacePostInState(updatedPost) {
     const state = getState();
 
@@ -270,6 +329,7 @@ function replacePostInState(updatedPost) {
     });
 }
 
+// Xác nhận với người dùng rồi gọi API đóng hoặc mở lại bài đăng.
 async function changePostStatus(post, nextStatus) {
     if (!isPostOwner(post, getCurrentUser())) {
         return;
@@ -285,10 +345,15 @@ async function changePostStatus(post, nextStatus) {
     }
 
     try {
-        const updatedPost = await updatePostStatusInJson(
-            post.id,
-            nextStatus,
-            getCurrentUser().studentId,
+        const updatedPost = await withAppLoading(
+            () => updatePostStatusInJson(
+                post.id,
+                nextStatus,
+                getCurrentUser().studentId,
+            ),
+            isResolving
+                ? "Đang đánh dấu bài đã hoàn thành..."
+                : "Đang mở lại bài đăng...",
         );
 
         replacePostInState(updatedPost);
@@ -299,6 +364,7 @@ async function changePostStatus(post, nextStatus) {
     }
 }
 
+// Đồng bộ trạng thái state lên các nút lọc, ô tìm kiếm và select.
 function syncPostControls(state) {
     document.querySelectorAll("[data-mode]").forEach((button) => {
         button.classList.toggle(
@@ -326,6 +392,7 @@ function syncPostControls(state) {
     document.querySelector("#sortFilter").value = state.filters.sortBy;
 }
 
+// Render lại toàn bộ dashboard từ state hiện tại.
 function render() {
     const state = getState();
     document.documentElement.dataset.theme = state.theme;
@@ -350,6 +417,7 @@ function render() {
         : "Bạn chưa đăng nhập.";
 }
 
+// Xử lý các bộ lọc danh sách: loại bài, trạng thái, bài của tôi và tìm kiếm.
 document.querySelectorAll("[data-mode]").forEach((button) => {
     button.addEventListener("click", () => {
         updateState({ mode: button.dataset.mode });
@@ -373,9 +441,19 @@ myPostsButton.addEventListener("click", () => {
     render();
 });
 
-document.querySelector("#postSearch").addEventListener("input", (event) => {
-    updateFilters({ keyword: event.target.value });
-    render();
+// Debounce thao tác tìm kiếm và hiển thị animation trong lúc lọc danh sách.
+postSearch.addEventListener("input", (event) => {
+    if (searchTimer) {
+        window.clearTimeout(searchTimer);
+    }
+
+    searchLoading.hidden = false;
+    searchTimer = window.setTimeout(() => {
+        updateFilters({ keyword: event.target.value });
+        render();
+        searchLoading.hidden = true;
+        searchTimer = null;
+    }, SEARCH_DEBOUNCE_TIME);
 });
 
 categoryFilter.addEventListener("change", (event) => {
@@ -388,6 +466,7 @@ document.querySelector("#sortFilter").addEventListener("change", (event) => {
     render();
 });
 
+// Chuyển theme và lưu lựa chọn vào state.
 themeToggle.addEventListener("click", () => {
     updateState({
         theme: getState().theme === "dark"
@@ -397,6 +476,7 @@ themeToggle.addEventListener("click", () => {
     render();
 });
 
+// Nút đăng xuất xóa cả user hiện tại và các bộ lọc riêng của tài khoản.
 document.querySelector("#loginButton").textContent = "Đăng xuất";
 document.querySelector("#loginButton").addEventListener("click", () => {
     updateState({
@@ -413,6 +493,7 @@ document.querySelector("#loginButton").addEventListener("click", () => {
     window.location.replace("./pages/introduction.html");
 });
 
+// Chuyển giữa khu vực bài viết và khu vực tài khoản.
 document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => {
         document.querySelectorAll(".view").forEach((view) => {
@@ -425,6 +506,7 @@ document.querySelectorAll("[data-view]").forEach((button) => {
     });
 });
 
+// Gắn sự kiện mở/đóng cho ba dialog của ứng dụng.
 addPostButton.addEventListener("click", openAddPostDialog);
 closeAddPostButton.addEventListener("click", closeAddPostDialog);
 cancelAddPostButton.addEventListener("click", closeAddPostDialog);
@@ -440,6 +522,7 @@ reportDialog.addEventListener("close", () => {
 closeReportsButton.addEventListener("click", closeReportsDialog);
 doneReportsButton.addEventListener("click", closeReportsDialog);
 
+// Form này xử lý cả tạo mới lẫn cập nhật bài đăng.
 addPostForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -450,50 +533,61 @@ addPostForm.addEventListener("submit", async (event) => {
         return;
     }
 
+    const isEditing = Boolean(editingPostId);
+    const loadingMessage = isEditing
+        ? "Đang cập nhật bài đăng..."
+        : "Đang đăng bài mới...";
+
+    submitPostButton.disabled = true;
+
     try {
-        if (editingPostId) {
-            const existingPost = getPostById(editingPostId);
+        await withAppLoading(async () => {
+            if (isEditing) {
+                const existingPost = getPostById(editingPostId);
 
-            if (!existingPost) {
-                throw new Error("Không tìm thấy bài đăng.");
+                if (!existingPost) {
+                    throw new Error("Không tìm thấy bài đăng.");
+                }
+
+                const changes = await createPostChangesFromForm(
+                    addPostForm,
+                    existingPost,
+                );
+                const updatedPost = await updatePostInJson(
+                    editingPostId,
+                    changes,
+                    currentUser.studentId,
+                );
+
+                replacePostInState(updatedPost);
+                updateState({ mode: updatedPost.type });
+            } else {
+                const newPost = await createPostFromForm(
+                    addPostForm,
+                    currentUser,
+                );
+                const savedPost = await savePostToJson(newPost);
+                const state = getState();
+
+                updateState({
+                    posts: [savedPost, ...state.posts],
+                    mode: savedPost.type,
+                    statusFilter: "active",
+                    filters: {
+                        ...state.filters,
+                        keyword: "",
+                        category: "all",
+                        sortBy: "createTime-desc",
+                    },
+                });
             }
-
-            const changes = await createPostChangesFromForm(
-                addPostForm,
-                existingPost,
-            );
-            const updatedPost = await updatePostInJson(
-                editingPostId,
-                changes,
-                currentUser.studentId,
-            );
-
-            replacePostInState(updatedPost);
-            updateState({ mode: updatedPost.type });
-        } else {
-            const newPost = await createPostFromForm(
-                addPostForm,
-                currentUser,
-            );
-            const savedPost = await savePostToJson(newPost);
-            const state = getState();
-
-            updateState({
-                posts: [savedPost, ...state.posts],
-                mode: savedPost.type,
-                statusFilter: "active",
-                filters: {
-                    ...state.filters,
-                    keyword: "",
-                    category: "all",
-                    sortBy: "createTime-desc",
-                },
-            });
-        }
+        }, loadingMessage);
     } catch (error) {
         console.error("Không lưu được bài đăng.", error);
         alert(error.message);
         return;
+    } finally {
+        submitPostButton.disabled = false;
     }
 
     closeAddPostDialog();
@@ -501,6 +595,7 @@ addPostForm.addEventListener("submit", async (event) => {
     render();
 });
 
+// Gửi thông tin liên hệ của người phản hồi đến API.
 reportForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -512,16 +607,21 @@ reportForm.addEventListener("submit", async (event) => {
         return;
     }
 
+    reportSubmitButton.disabled = true;
+
     try {
         const formData = new FormData(reportForm);
-        const updatedPost = await addPostReportToJson(
-            post.id,
-            {
-                reporterName: String(formData.get("reporterName") || "").trim(),
-                contact: String(formData.get("contact") || "").trim(),
-                message: String(formData.get("message") || "").trim(),
-            },
-            currentUser.studentId,
+        const updatedPost = await withAppLoading(
+            () => addPostReportToJson(
+                post.id,
+                {
+                    reporterName: String(formData.get("reporterName") || "").trim(),
+                    contact: String(formData.get("contact") || "").trim(),
+                    message: String(formData.get("message") || "").trim(),
+                },
+                currentUser.studentId,
+            ),
+            "Đang gửi phản hồi...",
         );
 
         replacePostInState(updatedPost);
@@ -531,9 +631,12 @@ reportForm.addEventListener("submit", async (event) => {
     } catch (error) {
         console.error("Không gửi được phản hồi.", error);
         alert(error.message);
+    } finally {
+        reportSubmitButton.disabled = false;
     }
 });
 
+// Event delegation xử lý toàn bộ nút hành động được render động trong postGrid.
 postGrid.addEventListener("click", (event) => {
     const button = event.target.closest("[data-action]");
 
@@ -592,7 +695,11 @@ postGrid.addEventListener("click", (event) => {
     }
 });
 
-await initializeState();
+// Tải dữ liệu ban đầu, chuẩn hóa bài cũ và tạo các option danh mục.
+await withAppLoading(
+    () => initializeState(),
+    "Đang tải danh sách bài viết...",
+);
 
 updateState({
     statusFilter: getState().statusFilter === "resolved"
@@ -627,4 +734,5 @@ addPostCategory.innerHTML = `
     ${categoryOptions}
 `;
 
+// Lần render đầu tiên sau khi dữ liệu đã sẵn sàng.
 render();

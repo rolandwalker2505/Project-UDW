@@ -1,5 +1,113 @@
 [
   {
+    "id": "seed-lost-20260725-01",
+    "type": "lost",
+    "title": "Thất lạc ví da màu nâu",
+    "category": "wallet",
+    "creator": {
+      "studentId": "DEMO101",
+      "name": "Lê Minh Khôi"
+    },
+    "content": "Ví da màu nâu có ngăn kéo khóa, bên trong có một số giấy tờ mang tên Minh Khôi.",
+    "location": "Căn tin cơ sở Nhà Bè",
+    "contact": "demo101@example.com",
+    "createTime": "2026-07-25T04:45:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-lost-20260725-02",
+    "type": "lost",
+    "title": "Tìm chìa khóa có móc hình quả bóng",
+    "category": "keys",
+    "creator": {
+      "studentId": "DEMO102",
+      "name": "Phạm Gia Hân"
+    },
+    "content": "Chùm gồm hai chìa khóa, móc khóa cao su hình quả bóng màu xanh.",
+    "location": "Hành lang tầng 3, dãy A",
+    "contact": "demo102@example.com",
+    "createTime": "2026-07-25T04:20:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-lost-20260725-03",
+    "type": "lost",
+    "title": "Mất thẻ giữ xe buổi sáng",
+    "category": "vehicle-card",
+    "creator": {
+      "studentId": "DEMO103",
+      "name": "Nguyễn Hoàng Nam"
+    },
+    "content": "Thẻ giữ xe màu trắng, có ghi biển số xe bằng bút mực xanh ở mặt sau.",
+    "location": "Bãi xe khu B",
+    "contact": "demo103@example.com",
+    "createTime": "2026-07-25T03:55:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-lost-20260725-04",
+    "type": "lost",
+    "title": "Tìm bình nước giữ nhiệt màu xanh",
+    "category": "water-bottle",
+    "creator": {
+      "studentId": "DEMO104",
+      "name": "Trần Ngọc Mai"
+    },
+    "content": "Bình dung tích 750 ml, nắp có quai xách và một vết xước nhỏ gần đáy.",
+    "location": "Phòng tự học thư viện",
+    "contact": "demo104@example.com",
+    "createTime": "2026-07-25T03:30:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-lost-20260725-05",
+    "type": "lost",
+    "title": "Thất lạc thẻ sinh viên tại phòng máy",
+    "category": "student-card",
+    "creator": {
+      "studentId": "DEMO105",
+      "name": "Võ Anh Thư"
+    },
+    "content": "Thẻ được đựng trong bao nhựa trong suốt cùng một dây đeo màu đen.",
+    "location": "Phòng máy A208",
+    "contact": "demo105@example.com",
+    "createTime": "2026-07-25T03:05:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
+    "id": "seed-lost-20260725-06",
+    "type": "lost",
+    "title": "Tìm túi chống sốc laptop màu xám",
+    "category": "other",
+    "creator": {
+      "studentId": "DEMO106",
+      "name": "Đặng Quốc Bảo"
+    },
+    "content": "Túi laptop 14 inch màu xám, khóa kéo màu đen và có logo nhỏ ở góc phải.",
+    "location": "Giảng đường C102",
+    "contact": "demo106@example.com",
+    "createTime": "2026-07-25T02:40:00.000Z",
+    "image": null,
+    "marked": false,
+    "status": "active",
+    "reports": []
+  },
+  {
     "id": "post-1784922889794",
     "type": "lost",
     "title": "tìm đồ thất lạc",

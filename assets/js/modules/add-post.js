@@ -1,3 +1,4 @@
+// Chuẩn hóa dữ liệu lấy từ FormData về chuỗi đã loại bỏ khoảng trắng thừa.
 function getFormValue(formData, fieldName) {
     return String(
         formData.get(fieldName) || "",
@@ -6,10 +7,12 @@ function getFormValue(formData, fieldName) {
 
 const MAX_IMAGE_SIZE = 650 * 1024;
 
+// Tạo ID tạm dựa trên thời điểm người dùng đăng bài.
 function createPostId() {
     return `post-${Date.now()}`;
 }
 
+// Chuyển file ảnh sang Data URL để có thể lưu trong JSON.
 function readImageAsDataUrl(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -30,6 +33,7 @@ function readImageAsDataUrl(file) {
     });
 }
 
+// Kiểm tra định dạng, dung lượng và đọc ảnh được chọn trong form.
 async function getImageDataUrl(formData) {
     const image = formData.get("image");
 
@@ -52,6 +56,7 @@ async function getImageDataUrl(formData) {
     return readImageAsDataUrl(image);
 }
 
+// Tạo đầy đủ một bài đăng mới từ form và người dùng hiện tại.
 export async function createPostFromForm(
     form,
     currentUser,
@@ -112,6 +117,7 @@ export async function createPostFromForm(
     };
 }
 
+// Chỉ tạo các trường được phép thay đổi khi chỉnh sửa bài.
 export async function createPostChangesFromForm(
     form,
     existingPost,
